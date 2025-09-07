@@ -1,5 +1,6 @@
 import { useMantineColorScheme } from "@mantine/core";
 import { HeaderMenu } from "./components/HeaderMenu/HeaderMenu";
+import Login from "./components/Login/Login";
 
 function App() {
   const { setColorScheme } = useMantineColorScheme();
@@ -9,6 +10,7 @@ function App() {
     <>
       <HeaderMenu />
       <div>Hello Michael</div>
+      <Login />
     </>
   );
 }
