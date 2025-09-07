@@ -7,7 +7,15 @@ import {
   IconAddressBook,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { Burger, Center, Container, Group, Menu } from "@mantine/core";
+import {
+  Burger,
+  Center,
+  Container,
+  Group,
+  Menu,
+  Drawer,
+  Stack,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./HeaderMenu.module.css";
 
@@ -89,6 +97,66 @@ export function HeaderMenu() {
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
         </div>
       </Container>
+
+      <Drawer
+        opened={opened}
+        onClose={toggle}
+        size="100%"
+        padding="md"
+        title="Navigation"
+        hiddenFrom="sm"
+        zIndex={1000}
+      >
+        <Stack>
+          {links.map((link) => {
+            if (link.links) {
+              return (
+                <Stack key={link.label} gap="xs">
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    {link.icon && (
+                      <link.icon size={20} style={{ marginRight: 5 }} />
+                    )}
+                    {link.label}
+                  </div>
+                  <Stack ml={20} gap="xs">
+                    {link.links.map((subLink) => (
+                      <a
+                        key={subLink.link}
+                        href={subLink.link}
+                        className={classes.link}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          toggle();
+                        }}
+                      >
+                        {subLink.label}
+                      </a>
+                    ))}
+                  </Stack>
+                </Stack>
+              );
+            }
+
+            return (
+              <a
+                key={link.label}
+                href={link.link}
+                className={classes.link}
+                onClick={(event) => {
+                  event.preventDefault();
+                  toggle();
+                }}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                {link.icon && (
+                  <link.icon size={20} style={{ marginRight: 5 }} />
+                )}
+                {link.label}
+              </a>
+            );
+          })}
+        </Stack>
+      </Drawer>
     </header>
   );
 }
