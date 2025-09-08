@@ -1,21 +1,5 @@
-import {
-  IconChevronDown,
-  IconHome,
-  IconArticle,
-  IconBulb,
-  IconFileCv,
-  IconAddressBook,
-  IconInfoCircle,
-} from "@tabler/icons-react";
-import {
-  Burger,
-  Center,
-  Container,
-  Group,
-  Menu,
-  Drawer,
-  Stack,
-} from "@mantine/core";
+import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconInfoCircle } from "@tabler/icons-react";
+import { Burger, Center, Container, Group, Menu, Drawer, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./HeaderMenu.module.css";
 
@@ -41,28 +25,15 @@ export function HeaderMenu() {
   const [opened, { toggle }] = useDisclosure(false);
 
   const items = links.map((link) => {
-    const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
-    ));
+    const menuItems = link.links?.map((item) => <Menu.Item key={item.link}>{item.label}</Menu.Item>);
 
     if (menuItems) {
       return (
-        <Menu
-          key={link.label}
-          trigger="hover"
-          transitionProps={{ exitDuration: 0 }}
-          withinPortal
-        >
+        <Menu key={link.label} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
           <Menu.Target>
-            <a
-              href={link.link}
-              className={classes.link}
-              onClick={(event) => event.preventDefault()}
-            >
+            <a href={link.link} className={classes.link} onClick={(event) => event.preventDefault()}>
               <Center>
-                {link.icon && (
-                  <link.icon size={20} style={{ marginRight: 5 }} />
-                )}
+                {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
                 <span className={classes.linkLabel}>{link.label}</span>
                 <IconChevronDown size={14} stroke={1.5} />
               </Center>
@@ -74,13 +45,7 @@ export function HeaderMenu() {
     }
 
     return (
-      <a
-        key={link.label}
-        href={link.link}
-        className={classes.link}
-        onClick={(event) => event.preventDefault()}
-        style={{ display: "flex", alignItems: "center" }}
-      >
+      <a key={link.label} href={link.link} className={classes.link} onClick={(event) => event.preventDefault()} style={{ display: "flex", alignItems: "center" }}>
         {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
         {link.label}
       </a>
@@ -98,24 +63,14 @@ export function HeaderMenu() {
         </div>
       </Container>
 
-      <Drawer
-        opened={opened}
-        onClose={toggle}
-        size="100%"
-        padding="md"
-        title="Navigation"
-        hiddenFrom="sm"
-        zIndex={1000}
-      >
+      <Drawer opened={opened} onClose={toggle} size="100%" padding="md" title="Navigation" hiddenFrom="sm" zIndex={1000}>
         <Stack>
           {links.map((link) => {
             if (link.links) {
               return (
                 <Stack key={link.label} gap="xs">
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    {link.icon && (
-                      <link.icon size={20} style={{ marginRight: 5 }} />
-                    )}
+                    {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
                     {link.label}
                   </div>
                   <Stack ml={20} gap="xs">
@@ -148,9 +103,7 @@ export function HeaderMenu() {
                 }}
                 style={{ display: "flex", alignItems: "center" }}
               >
-                {link.icon && (
-                  <link.icon size={20} style={{ marginRight: 5 }} />
-                )}
+                {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
                 {link.label}
               </a>
             );

@@ -12,7 +12,7 @@ describe("App", () => {
     render(
       <MantineProvider theme={theme}>
         <App />
-      </MantineProvider>
+      </MantineProvider>,
     );
     expect(screen.getByText("Hello Michael")).toBeInTheDocument();
   });
