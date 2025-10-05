@@ -21,13 +21,13 @@ function App() {
           <HeaderMenu />
           <div className={classes.mainView}>
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/resume" element={<ResumePage />} />
               <Route path="/blog" element={<BlogPage />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="*" element={<Navigate to="/home" />} />
             </Routes>
           </div>
         </BrowserRouter>
