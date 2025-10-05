@@ -1,4 +1,4 @@
-import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconInfoCircle, IconLogin } from '@tabler/icons-react';
+import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconLogin } from '@tabler/icons-react';
 import { Burger, Center, Container, Drawer, Group, Menu, Stack } from '@mantine/core';
 import classes from './HeaderMenu.module.css';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +6,6 @@ import { useDisclosure } from '@mantine/hooks';
 
 const links = [
   { link: '/home', label: 'Home', icon: IconHome },
-  { link: '/blog', label: 'Blog', icon: IconArticle },
-  { link: '/resume', label: 'Resume', icon: IconFileCv },
   {
     link: '/projects',
     label: 'Projects',
@@ -18,8 +16,9 @@ const links = [
       { link: 'https://github.com/mpphelps/ArduinoSnakeGame', label: 'Arduino Snake Game' },
     ],
   },
+  { link: '/blog', label: 'Blog', icon: IconArticle },
+  { link: '/resume', label: 'Resume', icon: IconFileCv },
   { link: '/contact', label: 'Contact', icon: IconAddressBook },
-  { link: '/about', label: 'About', icon: IconInfoCircle },
   { link: '/login', label: 'Login', icon: IconLogin, hover: 'meow' },
 ];
 

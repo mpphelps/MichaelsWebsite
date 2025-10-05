@@ -1,0 +1,12 @@
+.pageWrapper {
+  align-items: center;
+  min-height: 80vh;
+}
+
+.businessCard {
+  max-width: 400px;
+  min-width: 300px;
+  min-height: 200px;
+  text-align: center;
+  color: white;
+}

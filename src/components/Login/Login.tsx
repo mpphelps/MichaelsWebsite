@@ -2,6 +2,7 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { useSessionContext } from '../../context/SessionContext/useSessionContext';
 import { supabase } from '../../lib/supabase';
+import { Button } from '@mantine/core';
 
 export default function Login() {
   const { session, sessionLoading } = useSessionContext();
@@ -14,5 +15,9 @@ export default function Login() {
     return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={[]} view="sign_in" />;
   }
 
-  return <button onClick={() => supabase.auth.signOut()}>logout</button>;
+  return (
+    <Button variant="outline" onClick={() => supabase.auth.signOut()}>
+      logout
+    </Button>
+  );
 }
