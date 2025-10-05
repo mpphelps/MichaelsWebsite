@@ -6,8 +6,10 @@ import HomePage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import ProjectsPage from './pages/ProjectsPage/ProjectsPage';
 import ResumePage from './pages/ResumePage/ResumePage';
-import BlogPage from './pages/BlogPage/BlogPage';
+import BlogListPage from './pages/BlogListPage/BlogListPage';
+import BlogPostPage from './pages/BlogPostPage/BlogPostPage';
 import ContactPage from './pages/ContactPage/ContactPage';
+import MatrixCanvas from './BlogPosts/MatrixCanvas/MatrixCanvas';
 import classes from './App.module.css';
 
 function App() {
@@ -26,7 +28,9 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/resume" element={<ResumePage />} />
-              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog" element={<BlogListPage />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
+              <Route path="/matrix" element={<MatrixCanvas />} />
               <Route path="*" element={<Navigate to="/home" />} />
             </Routes>
           </div>
