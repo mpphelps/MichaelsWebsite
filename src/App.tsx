@@ -17,26 +17,24 @@ function App() {
   setColorScheme('dark');
 
   return (
-    <>
-      <SessionProvider>
-        <BrowserRouter>
-          <HeaderMenu />
-          <div className={classes.mainView}>
-            <Routes>
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/projects" element={<ProjectsPage />} />
-              <Route path="/resume" element={<ResumePage />} />
-              <Route path="/blog" element={<BlogListPage />} />
-              <Route path="/blog/:slug" element={<BlogPostPage />} />
-              <Route path="/matrix" element={<MatrixCanvas />} />
-              <Route path="*" element={<Navigate to="/home" />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
-      </SessionProvider>
-    </>
+    <SessionProvider>
+      <BrowserRouter>
+        <HeaderMenu />
+        <div className={classes.mainView}>
+          <Routes>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/resume" element={<ResumePage />} />
+            <Route path="/blog" element={<BlogListPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/matrix" element={<MatrixCanvas />} />
+            <Route path="*" element={<Navigate to="/home" />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </SessionProvider>
   );
 }
 
