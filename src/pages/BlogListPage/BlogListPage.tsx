@@ -1,7 +1,9 @@
-import { Container, Title, Card, Text, Group, Badge, Stack, Button } from '@mantine/core';
+import { Container, Card, Text, Group, Badge, Stack, Button } from '@mantine/core';
 import { IconCalendar, IconEye } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { blogPosts } from '../../data/blogData';
+import { blogPostsFetcher } from '../../utilities/fetcher';
+import useSWR from 'swr';
+import type { BlogPost } from '../../types/blog';
 
 export default function BlogListPage() {
   const navigate = useNavigate();
@@ -10,14 +12,24 @@ export default function BlogListPage() {
     navigate(`/blog/${slug}`);
   };
 
+  const { data, error, isLoading } = useSWR<BlogPost[]>('blog-posts', blogPostsFetcher);
+
+  if (isLoading) {
+    return <>Loading</>;
+  }
+
+  if (error) {
+    return <>Error: {error.message}</>;
+  }
+
+  if (!data) {
+    return <>No blog entries yet</>;
+  }
+
   return (
     <Container size="md" py="xl">
-      <Title order={1} mb="xl" ta="center">
-        Blog
-      </Title>
-
       <Stack gap="lg">
-        {blogPosts.map((post) => (
+        {data.map((post) => (
           <Card key={post.id} shadow="sm" padding="lg" radius="md" withBorder style={{ cursor: 'pointer' }} onClick={() => handlePostClick(post.slug)}>
             <Group justify="space-between" mb="xs">
               <Text fw={500} size="lg">
@@ -47,7 +59,7 @@ export default function BlogListPage() {
               <Group gap="xs">
                 <IconEye size={16} />
                 <Text size="sm" c="dimmed">
-                  {post.readTime}
+                  {post.read_time}
                 </Text>
               </Group>
             </Group>

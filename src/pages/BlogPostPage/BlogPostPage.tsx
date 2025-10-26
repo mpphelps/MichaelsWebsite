@@ -1,13 +1,15 @@
-import { Container, Title, Text, Badge, Group, Button, Stack, Anchor } from '@mantine/core';
+import { Container, Title, Text, Badge, Group, Button, Stack, Anchor, Code } from '@mantine/core';
 import { IconCalendar, IconArrowLeft } from '@tabler/icons-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { blogPostContent } from '../../data/blogData';
+import { blogPostContentFetcher } from '../../utilities/fetcher';
+import useSWR from 'swr';
+import type { BlogPostContent } from '../../types/blog';
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const post = slug ? blogPostContent[slug] : null;
+  const { data: post, error, isLoading } = useSWR<BlogPostContent>(slug, blogPostContentFetcher);
 
   // Function to parse markdown-style links [text](url)
   const parseMarkdownLinks = (text: string) => {
@@ -53,6 +55,16 @@ export default function BlogPostPage() {
     return parts.length > 1 ? parts : text;
   };
 
+  if (isLoading) {
+    return <>Loading</>;
+  }
+
+  if (error) {
+    return <>Error: {error.message}</>;
+  }
+
+  console.log('post', post);
+
   if (!post) {
     return (
       <Container size="md" py="xl">
@@ -85,7 +97,7 @@ export default function BlogPostPage() {
             •
           </Text>
           <Text size="sm" c="dimmed">
-            {post.readTime}
+            {post.read_time}
           </Text>
         </Group>
 
@@ -99,49 +111,101 @@ export default function BlogPostPage() {
       </Stack>
 
       <div style={{ lineHeight: 1.6 }}>
-        {post.content.split('\n').map((paragraph: string, index: number) => {
-          if (paragraph.trim() === '') return null;
+        {(() => {
+          const lines = post.content.split('\n');
+          const elements = [];
+          let i = 0;
+          let inCodeBlock = false;
+          let codeBlockContent: string[] = [];
 
-          if (paragraph.startsWith('# ')) {
-            return (
-              <Title key={index} order={1} mt="xl" mb="md">
-                {paragraph.slice(2)}
-              </Title>
-            );
-          }
-          if (paragraph.startsWith('## ')) {
-            return (
-              <Title key={index} order={2} mt="lg" mb="sm">
-                {paragraph.slice(3)}
-              </Title>
-            );
-          }
-          if (paragraph.startsWith('### ')) {
-            return (
-              <Title key={index} order={3} mt="md" mb="xs">
-                {paragraph.slice(4)}
-              </Title>
-            );
-          }
-          if (paragraph.startsWith('```')) {
-            return null; // Handle code blocks separately if needed
-          }
-          if (paragraph.startsWith('- ')) {
-            return (
-              <Text key={index} component="li" ml="md">
-                {paragraph.slice(2)}
+          while (i < lines.length) {
+            const line = lines[i];
+
+            // Handle code block start
+            if (line.startsWith('```')) {
+              if (!inCodeBlock) {
+                // Starting a code block
+                inCodeBlock = true;
+                codeBlockContent = [];
+              } else {
+                // Ending a code block
+                inCodeBlock = false;
+                elements.push(
+                  <Code key={i} block mt="md" mb="md">
+                    {codeBlockContent.join('\n')}
+                  </Code>
+                );
+                codeBlockContent = [];
+              }
+              i++;
+              continue;
+            }
+
+            // If inside code block, collect lines
+            if (inCodeBlock) {
+              codeBlockContent.push(line);
+              i++;
+              continue;
+            }
+
+            // Skip empty lines
+            if (line.trim() === '') {
+              i++;
+              continue;
+            }
+
+            // Handle headings
+            if (line.startsWith('# ')) {
+              elements.push(
+                <Title key={i} order={1} mt="xl" mb="md">
+                  {line.slice(2)}
+                </Title>
+              );
+              i++;
+              continue;
+            }
+            if (line.startsWith('## ')) {
+              elements.push(
+                <Title key={i} order={2} mt="lg" mb="sm">
+                  {line.slice(3)}
+                </Title>
+              );
+              i++;
+              continue;
+            }
+            if (line.startsWith('### ')) {
+              elements.push(
+                <Title key={i} order={3} mt="md" mb="xs">
+                  {line.slice(4)}
+                </Title>
+              );
+              i++;
+              continue;
+            }
+
+            // Handle list items
+            if (line.startsWith('- ')) {
+              elements.push(
+                <Text key={i} component="li" ml="md">
+                  {line.slice(2)}
+                </Text>
+              );
+              i++;
+              continue;
+            }
+
+            // Handle regular paragraphs with links
+            const parsedContent = parseMarkdownLinks(line);
+            elements.push(
+              <Text key={i} mb="sm">
+                {parsedContent}
               </Text>
             );
+            i++;
           }
 
-          const parsedContent = parseMarkdownLinks(paragraph);
-
-          return (
-            <Text key={index} mb="sm">
-              {parsedContent}
-            </Text>
-          );
-        })}
+          return elements;
+        })()}
       </div>
     </Container>
   );
