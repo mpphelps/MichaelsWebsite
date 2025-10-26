@@ -78,7 +78,7 @@ export default function BlogPostPage() {
   }
 
   return (
-    <Container size="md" py="xl">
+    <Container size="md" py="xl" px={{ base: 'md', sm: 'lg' }} style={{ maxWidth: '100%', overflowX: 'hidden' }}>
       <Button leftSection={<IconArrowLeft size={16} />} variant="subtle" onClick={() => navigate('/blog')} mb="xl">
         Back to Blog
       </Button>
@@ -110,7 +110,7 @@ export default function BlogPostPage() {
         </Group>
       </Stack>
 
-      <div style={{ lineHeight: 1.6 }}>
+      <div style={{ lineHeight: 1.6, maxWidth: '100%', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
         {(() => {
           const lines = post.content.split('\n');
           const elements = [];
@@ -131,7 +131,18 @@ export default function BlogPostPage() {
                 // Ending a code block
                 inCodeBlock = false;
                 elements.push(
-                  <Code key={i} block mt="md" mb="md">
+                  <Code
+                    key={i}
+                    block
+                    mt="md"
+                    mb="md"
+                    style={{
+                      overflowX: 'auto',
+                      maxWidth: '100%',
+                      whiteSpace: 'pre',
+                      wordBreak: 'normal',
+                    }}
+                  >
                     {codeBlockContent.join('\n')}
                   </Code>
                 );
