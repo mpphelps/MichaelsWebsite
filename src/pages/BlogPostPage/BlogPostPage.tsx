@@ -9,7 +9,7 @@ import { CodeHighlight, CodeHighlightAdapterProvider, createShikiAdapter } from 
 async function loadShiki() {
   const { createHighlighter } = await import('shiki');
   const shiki = await createHighlighter({
-    langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'scss', 'html', 'bash', 'json', 'C#', 'c++'],
+    langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'scss', 'html', 'bash', 'json', 'csharp', 'c++'],
     themes: [],
   });
 
