@@ -14,6 +14,7 @@ import classes from './App.module.css';
 
 function App() {
   const { setColorScheme } = useMantineColorScheme();
+
   setColorScheme('dark');
 
   return (

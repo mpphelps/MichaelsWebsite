@@ -1,13 +1,25 @@
-import { Container, Title, Text, Badge, Group, Button, Stack, Anchor, Code } from '@mantine/core';
+import { Container, Title, Text, Badge, Group, Button, Stack, Anchor } from '@mantine/core';
 import { IconCalendar, IconArrowLeft } from '@tabler/icons-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { blogPostContentFetcher } from '../../utilities/fetcher';
 import useSWR from 'swr';
 import type { BlogPostContent } from '../../types/blog';
+import { CodeHighlight, CodeHighlightAdapterProvider, createShikiAdapter } from '@mantine/code-highlight';
+
+async function loadShiki() {
+  const { createHighlighter } = await import('shiki');
+  const shiki = await createHighlighter({
+    langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'scss', 'html', 'bash', 'json', 'C#', 'c++'],
+    themes: [],
+  });
+
+  return shiki;
+}
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const shikiAdapter = createShikiAdapter(loadShiki);
 
   const { data: post, error, isLoading } = useSWR<BlogPostContent>(slug, blogPostContentFetcher);
 
@@ -63,8 +75,6 @@ export default function BlogPostPage() {
     return <>Error: {error.message}</>;
   }
 
-  console.log('post', post);
-
   if (!post) {
     return (
       <Container size="md" py="xl">
@@ -117,6 +127,7 @@ export default function BlogPostPage() {
           let i = 0;
           let inCodeBlock = false;
           let codeBlockContent: string[] = [];
+          let codeBlockLanguage = '';
 
           while (i < lines.length) {
             const line = lines[i];
@@ -127,26 +138,18 @@ export default function BlogPostPage() {
                 // Starting a code block
                 inCodeBlock = true;
                 codeBlockContent = [];
+                codeBlockLanguage = line.slice(3).trim();
               } else {
                 // Ending a code block
                 inCodeBlock = false;
+                //elements.push(<CodeHighlight key={i} language="tsx" code={codeBlockContent.join('\n')} radius="md" />);
                 elements.push(
-                  <Code
-                    key={i}
-                    block
-                    mt="md"
-                    mb="md"
-                    style={{
-                      overflowX: 'auto',
-                      maxWidth: '100%',
-                      whiteSpace: 'pre',
-                      wordBreak: 'normal',
-                    }}
-                  >
-                    {codeBlockContent.join('\n')}
-                  </Code>
+                  <CodeHighlightAdapterProvider key={i} adapter={shikiAdapter}>
+                    <CodeHighlight language={codeBlockLanguage} code={codeBlockContent.join('\n')} radius="md" />
+                  </CodeHighlightAdapterProvider>
                 );
                 codeBlockContent = [];
+                codeBlockLanguage = '';
               }
               i++;
               continue;
