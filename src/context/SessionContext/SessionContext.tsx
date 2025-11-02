@@ -42,7 +42,11 @@ const SessionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []); // Empty dependency array since this should only run once
 
-  const { data } = useSWR<UserRole>(session?.user.id, userRoleFetcher);
+  // revalidate only when session user id changes
+  const { data } = useSWR<UserRole>(session?.user.id, userRoleFetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: false,
+  });
 
   const contextValue: SessionContextValue = { session, sessionLoading, sessionUserEmail, userRole: data?.role };
 
