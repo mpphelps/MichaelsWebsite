@@ -2,20 +2,26 @@ import type { Session } from '@supabase/supabase-js';
 import React, { useEffect, useState } from 'react';
 import { createContext } from 'react';
 import { supabase } from '../../lib/supabase';
+import { userRoleFetcher } from '../../utilities/fetcher';
+import type { UserRole } from '../../types/userRole';
+import useSWR from 'swr';
 
-interface SessionContextProps {
+interface SessionContextValue {
   session: Session | null;
   sessionLoading: boolean;
   sessionUserEmail: string | null;
+  userRole: string | undefined;
 }
 
-const SessionContext = createContext<SessionContextProps>({
+const SessionContext = createContext<SessionContextValue>({
   session: null,
   sessionLoading: true,
   sessionUserEmail: null,
+  userRole: '',
 });
 
-const SessionProvider: React.FC<React.PropsWithChildren<object>> = ({ children }) => {
+// https://www.youtube.com/watch?v=PdEutzhsrws - advanced RLS security
+const SessionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [session, setSession] = React.useState<Session | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [sessionUserEmail, setSessionUserEmail] = useState<string | null>(null);
@@ -36,7 +42,9 @@ const SessionProvider: React.FC<React.PropsWithChildren<object>> = ({ children }
     return () => subscription.unsubscribe();
   }, []); // Empty dependency array since this should only run once
 
-  const contextValue = { session, sessionLoading, sessionUserEmail };
+  const { data } = useSWR<UserRole>(session?.user.id, userRoleFetcher);
+
+  const contextValue: SessionContextValue = { session, sessionLoading, sessionUserEmail, userRole: data?.role };
 
   return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
 };

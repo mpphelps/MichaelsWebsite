@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { BlogPost, BlogPostContent } from '../types/blog';
+import type { UserRole } from '../types/userRole';
 
 // Generic fetcher for any table with optional filters
 export const fetcher = async <T = unknown>(
@@ -55,3 +56,12 @@ export const blogPostContentFetcher = async (slug: string): Promise<BlogPostCont
     ],
     single: true,
   }) as Promise<BlogPostContent>;
+
+// Convenience wrapper for getting user role
+export const userRoleFetcher = async (userId: string): Promise<UserRole> => {
+  return fetcher<UserRole>('user_role', {
+    select: 'id, role',
+    filters: [{ column: 'id', value: userId }],
+    single: true,
+  }) as Promise<UserRole>;
+};

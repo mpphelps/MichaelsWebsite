@@ -26,6 +26,8 @@ export default function BlogListPage() {
     return <>No blog entries yet</>;
   }
 
+  console.log(data);
+
   return (
     <Container size="md" py="xl">
       <Stack gap="lg">
