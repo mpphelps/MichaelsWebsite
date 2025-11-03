@@ -11,6 +11,7 @@ import BlogPostPage from './pages/BlogPostPage/BlogPostPage';
 import ContactPage from './pages/ContactPage/ContactPage';
 import MatrixCanvas from './BlogPosts/MatrixCanvas/MatrixCanvas';
 import classes from './App.module.css';
+import CreateBlogPost from './pages/CreateBlogPost/CreateBlogPost';
 
 function App() {
   const { setColorScheme } = useMantineColorScheme();
@@ -29,6 +30,7 @@ function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/resume" element={<ResumePage />} />
             <Route path="/blog" element={<BlogListPage />} />
+            <Route path="/blog/new" element={<CreateBlogPost />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/matrix" element={<MatrixCanvas />} />
             <Route path="*" element={<Navigate to="/home" />} />

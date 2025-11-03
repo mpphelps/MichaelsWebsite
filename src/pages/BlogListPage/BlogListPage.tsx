@@ -4,9 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { blogPostsFetcher } from '../../utilities/fetcher';
 import useSWR from 'swr';
 import type { BlogPost } from '../../types/blog';
+import { useSessionContext } from '../../context/SessionContext/useSessionContext';
 
 export default function BlogListPage() {
   const navigate = useNavigate();
+  const { userRoleLoading, userRole } = useSessionContext();
+
+  console.log('User role in BlogListPage:', userRole);
 
   const handlePostClick = (slug: string) => {
     navigate(`/blog/${slug}`);
@@ -31,6 +35,7 @@ export default function BlogListPage() {
   return (
     <Container size="md" py="xl">
       <Stack gap="lg">
+        {userRoleLoading ? <>Loading...</> : userRole === 'admin' ? <Button onClick={() => navigate('/blog/new')}>Create Post</Button> : null}
         {data.map((post) => (
           <Card key={post.id} shadow="sm" padding="lg" radius="md" withBorder style={{ cursor: 'pointer' }} onClick={() => handlePostClick(post.slug)}>
             <Group justify="space-between" mb="xs">

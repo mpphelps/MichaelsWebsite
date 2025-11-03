@@ -12,16 +12,41 @@ async function loadShiki() {
     langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'scss', 'html', 'bash', 'json', 'csharp', 'c++'],
     themes: [],
   });
-
   return shiki;
 }
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const shikiAdapter = createShikiAdapter(loadShiki);
 
   const { data: post, error, isLoading } = useSWR<BlogPostContent>(slug, blogPostContentFetcher);
+
+  if (isLoading) {
+    return <>Loading</>;
+  }
+
+  if (error) {
+    return <>Error: {error.message}</>;
+  }
+
+  if (!post) {
+    return (
+      <Container size="md" py="xl">
+        <Title order={1}>Post Not Found</Title>
+        <Text mt="md">The blog post you're looking for doesn't exist.</Text>
+        <Button leftSection={<IconArrowLeft size={16} />} onClick={() => navigate('/blog')} mt="md">
+          Back to Blog
+        </Button>
+      </Container>
+    );
+  }
+
+  return <BlogPostContentContainer post={post} />;
+}
+
+export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ post }) => {
+  const shikiAdapter = createShikiAdapter(loadShiki);
+  const navigate = useNavigate();
 
   // Function to parse markdown-style links [text](url)
   const parseMarkdownLinks = (text: string) => {
@@ -66,26 +91,6 @@ export default function BlogPostPage() {
 
     return parts.length > 1 ? parts : text;
   };
-
-  if (isLoading) {
-    return <>Loading</>;
-  }
-
-  if (error) {
-    return <>Error: {error.message}</>;
-  }
-
-  if (!post) {
-    return (
-      <Container size="md" py="xl">
-        <Title order={1}>Post Not Found</Title>
-        <Text mt="md">The blog post you're looking for doesn't exist.</Text>
-        <Button leftSection={<IconArrowLeft size={16} />} onClick={() => navigate('/blog')} mt="md">
-          Back to Blog
-        </Button>
-      </Container>
-    );
-  }
 
   return (
     <Container size="md" py="xl" px={{ base: 'md', sm: 'lg' }} style={{ maxWidth: '100%', overflowX: 'hidden' }}>
@@ -223,4 +228,4 @@ export default function BlogPostPage() {
       </div>
     </Container>
   );
-}
+};

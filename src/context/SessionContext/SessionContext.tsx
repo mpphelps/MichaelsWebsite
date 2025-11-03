@@ -10,7 +10,9 @@ interface SessionContextValue {
   session: Session | null;
   sessionLoading: boolean;
   sessionUserEmail: string | null;
-  userRole: string | undefined;
+  userRole: string | null;
+  userRoleLoading: boolean;
+  userRoleError: Error | null;
 }
 
 const SessionContext = createContext<SessionContextValue>({
@@ -18,6 +20,8 @@ const SessionContext = createContext<SessionContextValue>({
   sessionLoading: true,
   sessionUserEmail: null,
   userRole: '',
+  userRoleLoading: true,
+  userRoleError: null,
 });
 
 // https://www.youtube.com/watch?v=PdEutzhsrws - advanced RLS security
@@ -43,12 +47,11 @@ const SessionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, []); // Empty dependency array since this should only run once
 
   // revalidate only when session user id changes
-  const { data } = useSWR<UserRole>(session?.user.id, userRoleFetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: false,
-  });
+  const { data, error: userRoleError, isLoading: userRoleLoading } = useSWR<UserRole>(session?.user.id, userRoleFetcher);
 
-  const contextValue: SessionContextValue = { session, sessionLoading, sessionUserEmail, userRole: data?.role };
+  console.log('User role in SessionProvider:', data?.role);
+
+  const contextValue: SessionContextValue = { session, sessionLoading, sessionUserEmail, userRole: data?.role ?? null, userRoleLoading, userRoleError };
 
   return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
 };
