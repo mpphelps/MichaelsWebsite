@@ -1,4 +1,4 @@
-import { Container, Title, Text, Badge, Group, Button, Stack, Anchor } from '@mantine/core';
+import { Container, Title, Text, Badge, Group, Button, Stack, Anchor, Image } from '@mantine/core';
 import { IconCalendar, IconArrowLeft } from '@tabler/icons-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { blogPostContentFetcher } from '../../utilities/fetcher';
@@ -209,6 +209,17 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
                   {line.slice(2)}
                 </Text>
               );
+              i++;
+              continue;
+            }
+
+            // Handle images
+            if (line.startsWith('![')) {
+              const altTextMatch = line.match(/!\[([^\]]*)\]/);
+              const urlMatch = line.match(/\(([^)]+)\)/);
+              const altText = altTextMatch ? altTextMatch[1] : '';
+              const url = urlMatch ? urlMatch[1] : '';
+              elements.push(<Image key={i} src={url} alt={altText} style={{ maxWidth: '100%', margin: '16px 0' }} />);
               i++;
               continue;
             }

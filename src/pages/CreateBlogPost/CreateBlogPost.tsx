@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput } from '@mantine/core';
+import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Text, Card } from '@mantine/core';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { BlogPostContentContainer } from '../BlogPostPage/BlogPostPage';
+import { ImageUpload } from '../../components/ImageUpload/ImageUpload';
 
 export const CreateBlogPost = () => {
   const [title, setTitle] = useState('');
@@ -12,7 +13,34 @@ export const CreateBlogPost = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  const handleDrop = async (files: File[]) => {
+    const file = files[0];
+    const { data, error } = await supabase.storage.from('blog-images').upload(`${file.name}`, file);
+
+    if (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image.');
+      return;
+    }
+    const imageUrl = supabase.storage.from('blog-images').getPublicUrl(data.path).data.publicUrl;
+    setContent((prevContent) => prevContent + `\n\n![${file.name}](${imageUrl})\n\n`);
+    setUploadedImages((prevImages) => [...prevImages, imageUrl]);
+  };
+
+  const handleDeleteImage = async (imageUrl: string) => {
+    const imagePath = decodeURIComponent(imageUrl.split('/blog-images/')[1]);
+    const { error } = await supabase.storage.from('blog-images').remove([imagePath]);
+    if (error) {
+      console.error('Error deleting image:', error);
+      alert('Failed to delete image.');
+      return;
+    }
+    setUploadedImages((prevImages) => prevImages.filter((img) => img !== imageUrl));
+    setContent((prevContent) => prevContent.replace(`![${imagePath}](${imageUrl})`, ''));
+  };
 
   const handleSubmit = async () => {
     if (!title || !content) {
@@ -65,7 +93,7 @@ export const CreateBlogPost = () => {
   };
 
   return (
-    <Container size="md" py="xl">
+    <Container size="md" py="xl" style={{ maxWidth: '50%', overflowX: 'hidden' }}>
       <Stack gap="lg">
         <Title>Create a New Blog Post</Title>
         <Divider />
@@ -75,8 +103,40 @@ export const CreateBlogPost = () => {
         <TextInput label="Excerpt" placeholder="Enter a short excerpt" value={excerpt} onChange={(event) => setExcerpt(event.currentTarget.value)} required />
         <NumberInput label="Read Time (min)" placeholder="Enter the read time (e.g., 5 min)" value={readTime} onChange={(value) => handleSetReadTime(value)} required />
         <TextInput label="Tags" placeholder="Enter tags separated by commas" value={tags.join(', ')} onChange={(event) => handleSetTags(event.currentTarget.value)} required />
-
-        <Textarea label="Content" placeholder="Write your blog post content here..." value={content} onChange={(event) => setContent(event.currentTarget.value)} minRows={10} required />
+        <Textarea
+          label="Content"
+          placeholder="Write your blog post content here..."
+          value={content}
+          onChange={(event) => setContent(event.currentTarget.value)}
+          required
+          styles={{
+            input: {
+              height: '300px', // Set a fixed height
+            },
+          }}
+        />
+        <ImageUpload onDrop={handleDrop} />
+        {/* Need to display uploaded images here with a X button to delete them */}
+        {uploadedImages.length > 0 && (
+          <Stack>
+            <Title order={4}>Uploaded Images</Title>
+            {uploadedImages.map((image, index) => (
+              <Group key={index} align="center">
+                <Card withBorder padding="sm" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                  <Text>{decodeURIComponent(image.split('/blog-images/')[1])}</Text>
+                  <Button
+                    color="red"
+                    onClick={() => {
+                      handleDeleteImage(image);
+                    }}
+                  >
+                    X
+                  </Button>
+                </Card>
+              </Group>
+            ))}
+          </Stack>
+        )}
 
         <Title order={3}>Preview</Title>
         <Divider />
