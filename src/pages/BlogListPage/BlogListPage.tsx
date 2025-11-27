@@ -1,5 +1,5 @@
 import { Container, Card, Text, Group, Badge, Stack, Button } from '@mantine/core';
-import { IconCalendar, IconEye } from '@tabler/icons-react';
+import { IconCalendar, IconEye, IconTrash, IconEdit } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { blogPostsFetcher } from '../../utilities/fetcher';
 import useSWR from 'swr';
@@ -47,6 +47,14 @@ export default function BlogListPage() {
                 <Text size="sm" c="dimmed">
                   {new Date(post.date).toLocaleDateString()}
                 </Text>
+                {userRoleLoading ? (
+                  <>Loading...</>
+                ) : userRole === 'admin' ? (
+                  <>
+                    <IconTrash onClick={() => navigate(`/blog/${post.slug}/delete`)} size={16} />
+                    <IconEdit onClick={() => navigate(`/blog/${post.slug}/edit`)} size={16} />
+                  </>
+                ) : null}
               </Group>
             </Group>
 
@@ -66,7 +74,7 @@ export default function BlogListPage() {
               <Group gap="xs">
                 <IconEye size={16} />
                 <Text size="sm" c="dimmed">
-                  {post.read_time}
+                  {`${post.read_time} min read`}
                 </Text>
               </Group>
             </Group>

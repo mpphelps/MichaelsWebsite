@@ -112,7 +112,7 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
             •
           </Text>
           <Text size="sm" c="dimmed">
-            {post.read_time}
+            {`${post.read_time} min read`}
           </Text>
         </Group>
 
