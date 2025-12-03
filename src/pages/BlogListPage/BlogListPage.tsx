@@ -99,12 +99,18 @@ export default function BlogListPage() {
                   <>
                     <IconTrash
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent navigation
+                        e.stopPropagation();
                         handleDelete(post.slug);
                       }}
                       size={16}
                     />
-                    <IconEdit onClick={() => navigate(`/blog/${post.slug}/edit`)} size={16} />
+                    <IconEdit
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/blog/${post.slug}/edit`);
+                      }}
+                      size={16}
+                    />
                   </>
                 ) : null}
               </Group>

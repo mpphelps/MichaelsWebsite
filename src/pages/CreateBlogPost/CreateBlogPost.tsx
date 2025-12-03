@@ -1,40 +1,48 @@
-import { useState } from 'react';
-import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Text, Card } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput } from '@mantine/core';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { BlogPostContentContainer } from '../BlogPostPage/BlogPostPage';
 import { ImageUpload } from '../../components/ImageUpload/ImageUpload';
 
-export const CreateBlogPost = () => {
-  const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
-  const [excerpt, setExcerpt] = useState('');
-  const [readTime, setReadTime] = useState(0);
-  const [tags, setTags] = useState<string[]>([]);
-  const [content, setContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+interface BlogPostData {
+  id?: string;
+  title?: string;
+  slug?: string;
+  excerpt?: string;
+  read_time?: number;
+  tags?: string[];
+  content?: string;
+}
+
+export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | null }) => {
+  const [title, setTitle] = useState<string>(initialData?.title || '');
+  const [slug, setSlug] = useState<string>(initialData?.slug || '');
+  const [excerpt, setExcerpt] = useState<string>(initialData?.excerpt || '');
+  const [readTime, setReadTime] = useState<number>(initialData?.read_time || 0);
+  const [tags, setTags] = useState<string[]>(initialData?.tags || []);
+  const [content, setContent] = useState<string>(initialData?.content || '');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [pendingImages, setPendingImages] = useState<File[]>([]);
   const navigate = useNavigate();
 
-  const [pendingImages, setPendingImages] = useState<File[]>([]);
+  // Update state when initialData changes (e.g., when loaded asynchronously)
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || '');
+      setSlug(initialData.slug || '');
+      setExcerpt(initialData.excerpt || '');
+      setReadTime(initialData.read_time || 0);
+      setTags(initialData.tags || []);
+      setContent(initialData.content || '');
+    }
+  }, [initialData]);
 
   const handleDrop = (files: File[]) => {
     const file = files[0];
     const tempUrl = URL.createObjectURL(file);
     setPendingImages((prev) => [...prev, ...files]);
     setContent((prevContent) => prevContent + `\n\n![${file.name}](${tempUrl})\n\n`);
-  };
-
-  const handleDeleteImage = async (imageUrl: string) => {
-    const imagePath = decodeURIComponent(imageUrl.split('/blog-images/')[1]);
-    const { error } = await supabase.storage.from('blog-images').remove([imagePath]);
-    if (error) {
-      console.error('Error deleting image:', error);
-      alert('Failed to delete image.');
-      return;
-    }
-    setUploadedImages((prevImages) => prevImages.filter((img) => img !== imageUrl));
-    setContent((prevContent) => prevContent.replace(`![${imagePath}](${imageUrl})`, ''));
   };
 
   const handleSubmit = async () => {
@@ -48,6 +56,37 @@ export const CreateBlogPost = () => {
     try {
       const folderName = slug;
       const uploadedImageUrls: string[] = [];
+
+      // If editing and the slug has changed, move existing images
+      if (initialData && initialData.slug !== slug) {
+        const { data: images, error: listError } = await supabase.storage.from('blog-images').list(initialData.slug);
+
+        if (listError) {
+          console.error('Error listing images in old folder:', listError);
+          alert('Failed to list images in the old folder.');
+          return;
+        }
+
+        if (images && images.length > 0) {
+          for (const image of images) {
+            const oldPath = `${initialData.slug}/${image.name}`;
+            const newPath = `${slug}/${image.name}`;
+
+            const { error: moveError } = await supabase.storage.from('blog-images').move(oldPath, newPath);
+
+            if (moveError) {
+              console.error(`Error moving image ${image.name}:`, moveError);
+              alert(`Failed to move image ${image.name}.`);
+              return;
+            }
+
+            // Update content to reflect the new image path
+            setContent((prevContent) => prevContent.replace(`/${initialData.slug}/${image.name}`, `/${slug}/${image.name}`));
+          }
+        }
+      }
+
+      // Upload pending images
       for (const file of pendingImages) {
         const { data, error } = await supabase.storage.from('blog-images').upload(`${folderName}/${file.name}`, file);
         if (error) {
@@ -66,28 +105,55 @@ export const CreateBlogPost = () => {
         updatedContent = updatedContent.replace(`![${file.name}](${tempUrl})`, `![${file.name}](${uploadedImageUrls[index]})`);
       });
 
-      const { error } = await supabase.from('blog_posts').insert([
-        {
-          slug,
-          title,
-          excerpt,
-          date: new Date().toISOString(),
-          read_time: readTime.toString(),
-          tags,
-          content,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          published: true,
-        },
-      ]);
+      if (initialData) {
+        // Update existing blog post
+        const { error } = await supabase
+          .from('blog_posts')
+          .update({
+            title,
+            slug,
+            excerpt,
+            read_time: readTime.toString(),
+            tags,
+            content: updatedContent,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', initialData.id);
 
-      if (error) {
-        console.error('Error creating blog post:', error);
-        alert('Failed to create blog post.');
+        if (error) {
+          console.error('Error updating blog post:', error);
+          alert('Failed to update blog post.');
+          return;
+        }
+
+        alert('Blog post updated successfully!');
       } else {
+        // Create new blog post
+        const { error } = await supabase.from('blog_posts').insert([
+          {
+            slug,
+            title,
+            excerpt,
+            date: new Date().toISOString(),
+            read_time: readTime.toString(),
+            tags,
+            content: updatedContent,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            published: true,
+          },
+        ]);
+
+        if (error) {
+          console.error('Error creating blog post:', error);
+          alert('Failed to create blog post.');
+          return;
+        }
+
         alert('Blog post created successfully!');
-        navigate('/blog');
       }
+
+      navigate('/blog');
     } catch (err) {
       console.error('Unexpected error:', err);
       alert('An unexpected error occurred.');
@@ -103,7 +169,6 @@ export const CreateBlogPost = () => {
   };
 
   const handleSetReadTime = (value: number | string | null | undefined) => {
-    // Normalize possible number/string/null/undefined from NumberInput to a number or undefined
     const parsed = typeof value === 'number' ? value : value ? Number(value) : undefined;
     setReadTime(parsed ?? 0);
   };
@@ -111,7 +176,7 @@ export const CreateBlogPost = () => {
   return (
     <Container size="md" py="xl" style={{ maxWidth: '50%', overflowX: 'hidden' }}>
       <Stack gap="lg">
-        <Title>Create a New Blog Post</Title>
+        <Title>{initialData ? 'Edit Blog Post' : 'Create a New Blog Post'}</Title>
         <Divider />
 
         <TextInput label="Title" placeholder="Enter the blog post title" value={title} onChange={(event) => setTitle(event.currentTarget.value)} required />
@@ -132,33 +197,12 @@ export const CreateBlogPost = () => {
           }}
         />
         <ImageUpload onDrop={handleDrop} />
-        {/* Need to display uploaded images here with a X button to delete them */}
-        {uploadedImages.length > 0 && (
-          <Stack>
-            <Title order={4}>Uploaded Images</Title>
-            {uploadedImages.map((image, index) => (
-              <Group key={index} align="center">
-                <Card withBorder padding="sm" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
-                  <Text>{decodeURIComponent(image.split('/blog-images/')[1])}</Text>
-                  <Button
-                    color="red"
-                    onClick={() => {
-                      handleDeleteImage(image);
-                    }}
-                  >
-                    X
-                  </Button>
-                </Card>
-              </Group>
-            ))}
-          </Stack>
-        )}
 
         <Title order={3}>Preview</Title>
         <Divider />
         <BlogPostContentContainer
           post={{
-            id: '1',
+            id: initialData?.id || '1',
             title,
             content,
             tags,
@@ -173,7 +217,7 @@ export const CreateBlogPost = () => {
 
         <Group style={{ justifyContent: 'flex-end' }}>
           <Button onClick={handleSubmit} loading={isSubmitting}>
-            Publish
+            {initialData ? 'Update' : 'Publish'}
           </Button>
         </Group>
       </Stack>
