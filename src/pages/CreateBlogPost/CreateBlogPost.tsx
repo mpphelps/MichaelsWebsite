@@ -16,18 +16,13 @@ export const CreateBlogPost = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const handleDrop = async (files: File[]) => {
-    const file = files[0];
-    const { data, error } = await supabase.storage.from('blog-images').upload(`${file.name}`, file);
+  const [pendingImages, setPendingImages] = useState<File[]>([]);
 
-    if (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image.');
-      return;
-    }
-    const imageUrl = supabase.storage.from('blog-images').getPublicUrl(data.path).data.publicUrl;
-    setContent((prevContent) => prevContent + `\n\n![${file.name}](${imageUrl})\n\n`);
-    setUploadedImages((prevImages) => [...prevImages, imageUrl]);
+  const handleDrop = (files: File[]) => {
+    const file = files[0];
+    const tempUrl = URL.createObjectURL(file);
+    setPendingImages((prev) => [...prev, ...files]);
+    setContent((prevContent) => prevContent + `\n\n![${file.name}](${tempUrl})\n\n`);
   };
 
   const handleDeleteImage = async (imageUrl: string) => {
@@ -51,6 +46,26 @@ export const CreateBlogPost = () => {
     setIsSubmitting(true);
 
     try {
+      const folderName = slug;
+      const uploadedImageUrls: string[] = [];
+      for (const file of pendingImages) {
+        const { data, error } = await supabase.storage.from('blog-images').upload(`${folderName}/${file.name}`, file);
+        if (error) {
+          console.error('Error uploading image:', error);
+          alert('Failed to upload image.');
+          return;
+        }
+        const imageUrl = supabase.storage.from('blog-images').getPublicUrl(data.path).data.publicUrl;
+        uploadedImageUrls.push(imageUrl);
+      }
+
+      // Replace placeholders in content with uploaded image URLs
+      let updatedContent = content;
+      pendingImages.forEach((file, index) => {
+        const tempUrl = URL.createObjectURL(file);
+        updatedContent = updatedContent.replace(`![${file.name}](${tempUrl})`, `![${file.name}](${uploadedImageUrls[index]})`);
+      });
+
       const { error } = await supabase.from('blog_posts').insert([
         {
           slug,
@@ -62,7 +77,7 @@ export const CreateBlogPost = () => {
           content,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          published: true, // Adjust based on your requirements
+          published: true,
         },
       ]);
 
@@ -71,13 +86,14 @@ export const CreateBlogPost = () => {
         alert('Failed to create blog post.');
       } else {
         alert('Blog post created successfully!');
-        navigate('/blog'); // Redirect to the blog list page
+        navigate('/blog');
       }
     } catch (err) {
       console.error('Unexpected error:', err);
       alert('An unexpected error occurred.');
     } finally {
       setIsSubmitting(false);
+      setPendingImages([]);
     }
   };
 
