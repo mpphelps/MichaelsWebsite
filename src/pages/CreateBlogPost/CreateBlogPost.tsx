@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput } from '@mantine/core';
+import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Card, Text } from '@mantine/core';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { BlogPostContentContainer } from '../BlogPostPage/BlogPostPage';
@@ -15,6 +15,11 @@ interface BlogPostData {
   content?: string;
 }
 
+interface ImageInfo {
+  image: File;
+  tempUrl: string;
+}
+
 export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | null }) => {
   const [title, setTitle] = useState<string>(initialData?.title || '');
   const [slug, setSlug] = useState<string>(initialData?.slug || '');
@@ -23,7 +28,7 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
   const [tags, setTags] = useState<string[]>(initialData?.tags || []);
   const [content, setContent] = useState<string>(initialData?.content || '');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [pendingImages, setPendingImages] = useState<File[]>([]);
+  const [pendingImages, setPendingImages] = useState<ImageInfo[]>([]);
   const navigate = useNavigate();
 
   // Update state when initialData changes (e.g., when loaded asynchronously)
@@ -41,7 +46,7 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
   const handleDrop = (files: File[]) => {
     const file = files[0];
     const tempUrl = URL.createObjectURL(file);
-    setPendingImages((prev) => [...prev, ...files]);
+    setPendingImages((prev) => [...prev, { image: file, tempUrl }]);
     setContent((prevContent) => prevContent + `\n\n![${file.name}](${tempUrl})\n\n`);
   };
 
@@ -87,8 +92,8 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
       }
 
       // Upload pending images
-      for (const file of pendingImages) {
-        const { data, error } = await supabase.storage.from('blog-images').upload(`${folderName}/${file.name}`, file);
+      for (const { image } of pendingImages) {
+        const { data, error } = await supabase.storage.from('blog-images').upload(`${folderName}/${image.name}`, image);
         if (error) {
           console.error('Error uploading image:', error);
           alert('Failed to upload image.');
@@ -100,9 +105,8 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
 
       // Replace placeholders in content with uploaded image URLs
       let updatedContent = content;
-      pendingImages.forEach((file, index) => {
-        const tempUrl = URL.createObjectURL(file);
-        updatedContent = updatedContent.replace(`![${file.name}](${tempUrl})`, `![${file.name}](${uploadedImageUrls[index]})`);
+      pendingImages.forEach(({ image, tempUrl }, index) => {
+        updatedContent = updatedContent.replace(`![${image.name}](${tempUrl})`, `![${image.name}](${uploadedImageUrls[index]})`);
       });
 
       if (initialData) {
@@ -173,6 +177,17 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
     setReadTime(parsed ?? 0);
   };
 
+  function handleDeleteImage(image: File, tempUrl: string) {
+    setPendingImages((prev) => prev.filter((img) => img.image !== image));
+
+    setContent(
+      (prevContent) => prevContent.replace(`![${image.name}](${tempUrl})`, '') // Remove the Markdown placeholder
+    );
+    console.log('Revoking URL:', tempUrl);
+
+    URL.revokeObjectURL(tempUrl);
+  }
+
   return (
     <Container size="md" py="xl" style={{ maxWidth: '50%', overflowX: 'hidden' }}>
       <Stack gap="lg">
@@ -197,6 +212,35 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
           }}
         />
         <ImageUpload onDrop={handleDrop} />
+        {pendingImages.length > 0 && (
+          <Stack>
+            <Title order={4}>Uploaded Images</Title>
+            {pendingImages.map(({ image, tempUrl }, index) => (
+              <Group key={index} align="center">
+                <Card withBorder padding="xs" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                  <Text>{image.name}</Text>
+                  <Button
+                    color="red"
+                    onClick={() => {
+                      handleDeleteImage(image, tempUrl);
+                    }}
+                    size="xs"
+                    style={{
+                      marginLeft: 'auto',
+                      padding: '2px 8px',
+                      fontSize: '12px',
+                      minWidth: 'unset',
+                      height: '24px',
+                      lineHeight: 1,
+                    }}
+                  >
+                    X
+                  </Button>
+                </Card>
+              </Group>
+            ))}
+          </Stack>
+        )}
 
         <Title order={3}>Preview</Title>
         <Divider />
