@@ -93,7 +93,16 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
   };
 
   return (
-    <Container size="md" py="xl" px={{ base: 'md', sm: 'lg' }} style={{ maxWidth: '100%', overflowX: 'hidden' }}>
+    <Container
+      size="md"
+      py="xl"
+      px={{ base: 'md', sm: 'lg' }}
+      style={{
+        maxWidth: '1000px', // Set a maximum width for desktop
+        margin: '0 auto', // Center the content
+        overflowX: 'hidden', // Prevent horizontal scrolling
+      }}
+    >
       <Button leftSection={<IconArrowLeft size={16} />} variant="subtle" onClick={() => navigate('/blog')} mb="xl">
         Back to Blog
       </Button>
@@ -125,7 +134,16 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
         </Group>
       </Stack>
 
-      <div style={{ lineHeight: 1.6, maxWidth: '100%', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+      <div
+        style={{
+          lineHeight: 1.6,
+          maxWidth: '100%',
+          overflowWrap: 'break-word', // Ensures long words wrap to the next line
+          wordWrap: 'break-word', // Legacy support for older browsers
+          wordBreak: 'break-word', // Ensures long words break properly
+          whiteSpace: 'pre-wrap', // Preserves whitespace and ensures proper wrapping
+        }}
+      >
         {(() => {
           const lines = post.content.split('\n');
           const elements = [];
