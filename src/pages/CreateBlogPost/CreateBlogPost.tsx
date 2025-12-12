@@ -189,7 +189,7 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
   }
 
   return (
-    <Container size="md" py="xl" style={{ maxWidth: '50%', overflowX: 'hidden' }}>
+    <Container size="md" py="xl" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
       <Stack gap="lg">
         <Title>{initialData ? 'Edit Blog Post' : 'Create a New Blog Post'}</Title>
         <Divider />

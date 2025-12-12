@@ -93,55 +93,53 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
   };
 
   return (
-    <Container
-      size="md"
-      py="xl"
-      px={{ base: 'md', sm: 'lg' }}
-      style={{
-        maxWidth: '1000px', // Set a maximum width for desktop
-        margin: '0 auto', // Center the content
-        overflowX: 'hidden', // Prevent horizontal scrolling
-      }}
-    >
-      <Button leftSection={<IconArrowLeft size={16} />} variant="subtle" onClick={() => navigate('/blog')} mb="xl">
-        Back to Blog
-      </Button>
+    <>
+      <Container
+        size="md"
+        py="xl"
+        px={{ base: 'md', sm: 'lg' }}
+        style={{
+          maxWidth: '1000px', // Set a maximum width for desktop
+          margin: '0 auto', // Center the content
+          overflowX: 'hidden', // Prevent horizontal scrolling
+        }}
+      >
+        <Button leftSection={<IconArrowLeft size={16} />} variant="subtle" onClick={() => navigate('/blog')} mb="xl">
+          Back to Blog
+        </Button>
 
-      <Stack gap="md" mb="xl">
-        <Title order={1}>{post.title}</Title>
+        <Stack gap="md" mb="xl">
+          <Title order={1}>{post.title}</Title>
 
-        <Group>
-          <Group gap="xs">
-            <IconCalendar size={16} />
+          <Group>
+            <Group gap="xs">
+              <IconCalendar size={16} />
+              <Text size="sm" c="dimmed">
+                {new Date(post.date).toLocaleDateString()}
+              </Text>
+            </Group>
             <Text size="sm" c="dimmed">
-              {new Date(post.date).toLocaleDateString()}
+              •
+            </Text>
+            <Text size="sm" c="dimmed">
+              {`${post.read_time} min read`}
             </Text>
           </Group>
-          <Text size="sm" c="dimmed">
-            •
-          </Text>
-          <Text size="sm" c="dimmed">
-            {`${post.read_time} min read`}
-          </Text>
-        </Group>
 
-        <Group gap="xs">
-          {post.tags.map((tag: string) => (
-            <Badge key={tag} variant="light">
-              {tag}
-            </Badge>
-          ))}
-        </Group>
-      </Stack>
+          <Group gap="xs">
+            {post.tags.map((tag: string) => (
+              <Badge key={tag} variant="light">
+                {tag}
+              </Badge>
+            ))}
+          </Group>
+        </Stack>
+      </Container>
 
       <div
         style={{
           lineHeight: 1.6,
           maxWidth: '100%',
-          overflowWrap: 'break-word', // Ensures long words wrap to the next line
-          wordWrap: 'break-word', // Legacy support for older browsers
-          wordBreak: 'break-word', // Ensures long words break properly
-          whiteSpace: 'pre-wrap', // Preserves whitespace and ensures proper wrapping
         }}
       >
         {(() => {
@@ -255,6 +253,6 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
           return elements;
         })()}
       </div>
-    </Container>
+    </>
   );
 };
