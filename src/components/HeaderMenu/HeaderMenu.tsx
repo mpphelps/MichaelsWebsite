@@ -1,5 +1,5 @@
-import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconLogin } from '@tabler/icons-react';
-import { Burger, Center, Container, Drawer, Group, Menu, Stack } from '@mantine/core';
+import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconLogin, IconPoint } from '@tabler/icons-react';
+import { Burger, Center, Container, Drawer, Flex, Group, Menu, Stack } from '@mantine/core';
 import classes from './HeaderMenu.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
@@ -93,23 +93,25 @@ export function HeaderMenu() {
               return (
                 <Stack key={link.label} gap="xs">
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
+                    {link.icon && <link.icon size={20} style={{ marginRight: 5, marginLeft: 10 }} />}
                     {link.label}
                   </div>
-                  <Stack ml={20} gap="xs">
+                  <Stack ml={30} gap="xs">
                     {link.links.map((subLink) => (
-                      <a
-                        key={subLink.link}
-                        href={subLink.link}
-                        className={classes.link}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          toggle();
-                          window.open(subLink.link);
-                        }}
-                      >
-                        {subLink.label}
-                      </a>
+                      <Flex align="center" key={subLink.link}>
+                        <IconPoint />
+                        <a
+                          href={subLink.link}
+                          className={classes.link}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            toggle();
+                            window.open(subLink.link);
+                          }}
+                        >
+                          {subLink.label}
+                        </a>
+                      </Flex>
                     ))}
                   </Stack>
                 </Stack>
