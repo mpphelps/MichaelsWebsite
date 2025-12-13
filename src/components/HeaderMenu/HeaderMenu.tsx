@@ -76,9 +76,11 @@ export function HeaderMenu() {
     <header className={classes.header}>
       <Container size="md">
         <div className={classes.inner}>
+          {/* Header icons visible when page is larger than sm*/}
           <Group gap={5} visibleFrom="sm">
             {items}
           </Group>
+          {/* Header icons hidden, show burger menu when page is smaller than sm*/}
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
         </div>
       </Container>

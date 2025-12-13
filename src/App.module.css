@@ -1,8 +1,9 @@
 .mainView {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
-  position: relative;
-  z-index: 1;
+  max-width: 100%;
+  line-height: 1.6;
+  justify-self: center;
+  @media (min-width: em(768px)) {
+  max-width: 1000px;
+  }
 }

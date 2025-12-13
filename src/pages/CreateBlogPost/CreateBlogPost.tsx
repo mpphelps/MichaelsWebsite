@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Card, Text } from '@mantine/core';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
-import { BlogPostContentContainer } from '../BlogPostPage/BlogPostPage';
 import { ImageUpload } from '../../components/ImageUpload/ImageUpload';
+import { BlogPostContentContainer } from '../../components/BlogPostContent/BlogPostContent';
 
 interface BlogPostData {
   id?: string;
