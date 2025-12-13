@@ -7,13 +7,13 @@ import { useDisclosure } from '@mantine/hooks';
 const links = [
   { link: '/home', label: 'Home', icon: IconHome },
   {
-    link: '/projects',
     label: 'Projects',
     icon: IconBulb,
     links: [
       { link: 'https://github.com/mpphelps/PeanutGameEngine', label: 'Peanut Game Engine' },
       { link: 'https://mpphelps.github.io/Etch-a-Sketch/', label: 'Etch A Sketch' },
       { link: 'https://github.com/mpphelps/ArduinoSnakeGame', label: 'Arduino Snake Game' },
+      { link: `${window.location.origin}/matrix`, label: 'Matrix Rain' },
     ],
   },
   { link: '/blog', label: 'Blog', icon: IconArticle },
@@ -41,7 +41,7 @@ export function HeaderMenu() {
               href={link.link}
               className={classes.link}
               onClick={() => {
-                navigate(link.link);
+                if (link.link) navigate(link.link);
               }}
             >
               <Center>
@@ -61,8 +61,9 @@ export function HeaderMenu() {
         key={link.label}
         href={link.link}
         className={classes.link}
-        onClick={() => {
-          navigate(link.link);
+        onClick={(e) => {
+          e.preventDefault();
+          if (link.link) navigate(link.link);
         }}
         style={{ display: 'flex', alignItems: 'center' }}
       >
