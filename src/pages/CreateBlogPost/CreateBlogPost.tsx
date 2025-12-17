@@ -31,6 +31,10 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
   const [pendingImages, setPendingImages] = useState<ImageInfo[]>([]);
   const navigate = useNavigate();
 
+  window.addEventListener('beforeunload', function (event) {
+    event.preventDefault();
+  });
+
   // Update state when initialData changes (e.g., when loaded asynchronously)
   useEffect(() => {
     if (initialData) {
