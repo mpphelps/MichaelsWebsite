@@ -4,13 +4,22 @@ import type { BlogPostContent } from '../../types/blog';
 import { CodeHighlight, CodeHighlightAdapterProvider, createShikiAdapter } from '@mantine/code-highlight';
 import { useNavigate } from 'react-router-dom';
 
+let cachedHighlighter: unknown = null; // Cache for the highlighter instance
+
+const supportedLanguages = ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'scss', 'html', 'bash', 'json', 'csharp', 'c++', 'plaintext'];
+
 async function loadShiki() {
+  if (cachedHighlighter) {
+    return cachedHighlighter; // Return the cached instance if it exists
+  }
+
   const { createHighlighter } = await import('shiki');
-  const shiki = await createHighlighter({
-    langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'scss', 'html', 'bash', 'json', 'csharp', 'c++'],
+  cachedHighlighter = await createHighlighter({
+    langs: [...supportedLanguages],
     themes: [],
   });
-  return shiki;
+
+  return cachedHighlighter;
 }
 
 export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ post }) => {
@@ -115,11 +124,15 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
             } else {
               // Ending a code block
               inCodeBlock = false;
-              //elements.push(<CodeHighlight key={i} language="tsx" code={codeBlockContent.join('\n')} radius="md" />);
+              const validLanguage = supportedLanguages.includes(codeBlockLanguage) ? codeBlockLanguage : 'plaintext'; // Fallback to plaintext if language is invalid
+
               elements.push(
-                <CodeHighlightAdapterProvider key={i} adapter={shikiAdapter}>
-                  <CodeHighlight language={codeBlockLanguage} code={codeBlockContent.join('\n')} radius="md" />
-                </CodeHighlightAdapterProvider>
+                <>
+                  <CodeHighlightAdapterProvider key={i} adapter={shikiAdapter}>
+                    <div>{validLanguage}</div>
+                    <CodeHighlight language={validLanguage} code={validLanguage + '\n' + codeBlockContent.join('\n')} radius="md" />
+                  </CodeHighlightAdapterProvider>
+                </>
               );
               codeBlockContent = [];
               codeBlockLanguage = '';
