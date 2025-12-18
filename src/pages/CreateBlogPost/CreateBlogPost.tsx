@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Card, Text } from '@mantine/core';
+import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Card, Text, Modal } from '@mantine/core';
 import { supabase } from '../../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useBlocker, useNavigate } from 'react-router-dom';
 import { ImageUpload } from '../../components/ImageUpload/ImageUpload';
 import { BlogPostContentContainer } from '../../components/BlogPostContent/BlogPostContent';
+import { useDisclosure } from '@mantine/hooks';
 
 interface BlogPostData {
   id?: string;
@@ -27,13 +28,34 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
   const [readTime, setReadTime] = useState<number>(initialData?.read_time || 0);
   const [tags, setTags] = useState<string[]>(initialData?.tags || []);
   const [content, setContent] = useState<string>(initialData?.content || '');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [pendingImages, setPendingImages] = useState<ImageInfo[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isDirty, setIsDirty] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [opened, { open, close }] = useDisclosure(false);
 
-  window.addEventListener('beforeunload', function (event) {
-    event.preventDefault();
-  });
+  const blocker = useBlocker(isDirty);
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      open();
+    }
+  }, [blocker.state, open]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
 
   // Update state when initialData changes (e.g., when loaded asynchronously)
   useEffect(() => {
@@ -47,14 +69,58 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
     }
   }, [initialData]);
 
-  const handleDrop = (files: File[]) => {
+  const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.currentTarget.value);
+    setIsDirty(true);
+  };
+
+  const onSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSlug(event.currentTarget.value);
+    setIsDirty(true);
+  };
+
+  const onExcerptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setExcerpt(event.currentTarget.value);
+    setIsDirty(true);
+  };
+
+  const onSetReadTime = (value: number | string | null | undefined) => {
+    const parsed = typeof value === 'number' ? value : value ? Number(value) : undefined;
+    setReadTime(parsed ?? 0);
+    setIsDirty(true);
+  };
+
+  const onSetTags = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const tagsArray = event.currentTarget.value.split(',').map((tag) => tag.trim());
+    setTags(tagsArray);
+    setIsDirty(true);
+  };
+
+  const onContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(event.currentTarget.value);
+    setIsDirty(true);
+  };
+
+  const onDrop = (files: File[]) => {
     const file = files[0];
     const tempUrl = URL.createObjectURL(file);
     setPendingImages((prev) => [...prev, { image: file, tempUrl }]);
     setContent((prevContent) => prevContent + `\n\n![${file.name}](${tempUrl})\n\n`);
+    setIsDirty(true);
   };
 
-  const handleSubmit = async () => {
+  const onDeleteImage = (image: File, tempUrl: string) => {
+    setPendingImages((prev) => prev.filter((img) => img.image !== image));
+
+    setContent(
+      (prevContent) => prevContent.replace(`![${image.name}](${tempUrl})`, '') // Remove the Markdown placeholder
+    );
+    console.log('Revoking URL:', tempUrl);
+
+    URL.revokeObjectURL(tempUrl);
+  };
+
+  const onSubmit = async () => {
     if (!title || !content) {
       alert('Please fill in all fields.');
       return;
@@ -171,43 +237,22 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
     }
   };
 
-  const handleSetTags = (value: string) => {
-    const tagsArray = value.split(',').map((tag) => tag.trim());
-    setTags(tagsArray);
-  };
-
-  const handleSetReadTime = (value: number | string | null | undefined) => {
-    const parsed = typeof value === 'number' ? value : value ? Number(value) : undefined;
-    setReadTime(parsed ?? 0);
-  };
-
-  function handleDeleteImage(image: File, tempUrl: string) {
-    setPendingImages((prev) => prev.filter((img) => img.image !== image));
-
-    setContent(
-      (prevContent) => prevContent.replace(`![${image.name}](${tempUrl})`, '') // Remove the Markdown placeholder
-    );
-    console.log('Revoking URL:', tempUrl);
-
-    URL.revokeObjectURL(tempUrl);
-  }
-
   return (
     <Container size="md" py="xl" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
       <Stack gap="lg">
         <Title>{initialData ? 'Edit Blog Post' : 'Create a New Blog Post'}</Title>
         <Divider />
 
-        <TextInput label="Title" placeholder="Enter the blog post title" value={title} onChange={(event) => setTitle(event.currentTarget.value)} required />
-        <TextInput label="Slug" placeholder="Enter the blog post slug" value={slug} onChange={(event) => setSlug(event.currentTarget.value)} required />
-        <TextInput label="Excerpt" placeholder="Enter a short excerpt" value={excerpt} onChange={(event) => setExcerpt(event.currentTarget.value)} required />
-        <NumberInput label="Read Time (min)" placeholder="Enter the read time (e.g., 5 min)" value={readTime} onChange={(value) => handleSetReadTime(value)} required />
-        <TextInput label="Tags" placeholder="Enter tags separated by commas" value={tags.join(', ')} onChange={(event) => handleSetTags(event.currentTarget.value)} required />
+        <TextInput label="Title" placeholder="Enter the blog post title" value={title} onChange={(event) => onTitleChange(event)} required />
+        <TextInput label="Slug" placeholder="Enter the blog post slug" value={slug} onChange={(event) => onSlugChange(event)} required />
+        <TextInput label="Excerpt" placeholder="Enter a short excerpt" value={excerpt} onChange={(event) => onExcerptChange(event)} required />
+        <NumberInput label="Read Time (min)" placeholder="Enter the read time (e.g., 5 min)" value={readTime} onChange={(value) => onSetReadTime(value)} required />
+        <TextInput label="Tags" placeholder="Enter tags separated by commas" value={tags.join(', ')} onChange={(event) => onSetTags(event)} required />
         <Textarea
           label="Content"
           placeholder="Write your blog post content here..."
           value={content}
-          onChange={(event) => setContent(event.currentTarget.value)}
+          onChange={(event) => onContentChange(event)}
           required
           styles={{
             input: {
@@ -215,7 +260,7 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
             },
           }}
         />
-        <ImageUpload onDrop={handleDrop} />
+        <ImageUpload onDrop={onDrop} />
         {pendingImages.length > 0 && (
           <Stack>
             <Title order={4}>Uploaded Images</Title>
@@ -226,7 +271,7 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
                   <Button
                     color="red"
                     onClick={() => {
-                      handleDeleteImage(image, tempUrl);
+                      onDeleteImage(image, tempUrl);
                     }}
                     size="xs"
                     style={{
@@ -264,11 +309,37 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
         />
 
         <Group style={{ justifyContent: 'flex-end' }}>
-          <Button onClick={handleSubmit} loading={isSubmitting}>
+          <Button onClick={onSubmit} loading={isSubmitting}>
             {initialData ? 'Update' : 'Publish'}
           </Button>
         </Group>
       </Stack>
+
+      {blocker.state === 'blocked' && (
+        <Modal opened={opened} onClose={close} title="Unsaved Changes" centered>
+          <Text>You have unsaved changes. Are you sure you want to leave this page?</Text>
+          <Group mt="md">
+            <Button
+              variant="outline"
+              onClick={() => {
+                blocker.reset();
+                close();
+              }}
+            >
+              Stay
+            </Button>
+            <Button
+              color="red"
+              onClick={() => {
+                blocker.proceed();
+                close();
+              }}
+            >
+              Leave
+            </Button>
+          </Group>
+        </Modal>
+      )}
     </Container>
   );
 };
