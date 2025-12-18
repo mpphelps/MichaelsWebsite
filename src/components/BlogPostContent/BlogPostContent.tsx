@@ -127,12 +127,24 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
               const validLanguage = supportedLanguages.includes(codeBlockLanguage) ? codeBlockLanguage : 'plaintext'; // Fallback to plaintext if language is invalid
 
               elements.push(
-                <>
-                  <CodeHighlightAdapterProvider key={i} adapter={shikiAdapter}>
-                    <div>{validLanguage}</div>
-                    <CodeHighlight language={validLanguage} code={validLanguage + '\n' + codeBlockContent.join('\n')} radius="md" />
+                <div key={i} style={{ marginBottom: '16px' }}>
+                  {validLanguage !== 'plaintext' && (
+                    <Text
+                      size="sm"
+                      color="dimmed"
+                      style={{
+                        fontStyle: 'italic',
+                        marginBottom: '4px',
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {validLanguage}
+                    </Text>
+                  )}
+                  <CodeHighlightAdapterProvider adapter={shikiAdapter}>
+                    <CodeHighlight language={validLanguage} code={codeBlockContent.join('\n')} radius="md" />
                   </CodeHighlightAdapterProvider>
-                </>
+                </div>
               );
               codeBlockContent = [];
               codeBlockLanguage = '';
@@ -200,7 +212,21 @@ export const BlogPostContentContainer: React.FC<{ post: BlogPostContent }> = ({ 
             const urlMatch = line.match(/\(([^)]+)\)/);
             const altText = altTextMatch ? altTextMatch[1] : '';
             const url = urlMatch ? urlMatch[1] : '';
-            elements.push(<Image key={i} src={url} alt={altText} style={{ maxWidth: '100%', margin: '16px 0' }} />);
+            elements.push(
+              <Image
+                key={i}
+                src={url}
+                alt={altText}
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  width: 'auto',
+                  margin: '16px auto', // Center the image horizontally
+                  objectFit: 'contain',
+                  display: 'block', // Ensures the image behaves like a block element
+                }}
+              />
+            );
             i++;
             continue;
           }
