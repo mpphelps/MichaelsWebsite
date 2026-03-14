@@ -251,6 +251,7 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
         <Textarea
           label="Content"
           placeholder="Write your blog post content here..."
+          resize="vertical"
           value={content}
           onChange={(event) => onContentChange(event)}
           required
