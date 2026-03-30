@@ -1,0 +1,74 @@
+.chartSection {
+  position: relative;
+  margin: 2.5rem 0;
+  padding: 1.75rem 1.5rem 1.25rem;
+  border: 1px solid;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.chartGlow {
+  position: absolute;
+  top: 50%;
+  right: -5%;
+  width: 40%;
+  height: 80%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem 0.25rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d1d5db;
+}
+
+.chartSubtitle {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #4b5563;
+  text-transform: lowercase;
+}
+
+.chartTooltip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(10, 10, 14, 0.94);
+  border: 1px solid rgba(0, 210, 198, 0.18);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 210, 198, 0.05);
+}
+
+.tooltipLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  letter-spacing: 0.01em;
+}
+
+.tooltipDivider {
+  width: 1px;
+  height: 14px;
+}
+
+.tooltipValue {
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
