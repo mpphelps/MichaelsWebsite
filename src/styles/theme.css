@@ -1,0 +1,440 @@
+:root {
+  --sf-bg: #070a0c;
+  --sf-surface: #0d1418;
+  --sf-surface-2: #121b21;
+  --sf-surface-3: #1a262d;
+
+  --sf-border: rgba(94, 227, 196, 0.18);
+  --sf-border-strong: rgba(94, 227, 196, 0.45);
+  --sf-border-dim: rgba(180, 200, 210, 0.08);
+
+  --sf-accent: #5ee3c4;
+  --sf-accent-deep: #2fb88f;
+  --sf-accent-warm: #f0b94a;
+  --sf-accent-alert: #ff6b6b;
+
+  --sf-text: #e6edf0;
+  --sf-text-dim: #8a9ba3;
+  --sf-text-mute: #4d5d66;
+
+  --sf-glow: rgba(94, 227, 196, 0.35);
+  --sf-glow-soft: rgba(94, 227, 196, 0.12);
+  --sf-grid: rgba(94, 227, 196, 0.045);
+
+  --sf-font-display: 'Chakra Petch', system-ui, sans-serif;
+  --sf-font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --sf-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+html,
+body {
+  background: var(--sf-bg);
+  color: var(--sf-text);
+  font-family: var(--sf-font-body);
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid + radial vignette atmosphere */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: linear-gradient(var(--sf-grid) 1px, transparent 1px), linear-gradient(90deg, var(--sf-grid) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% -10%, rgba(94, 227, 196, 0.08), transparent 55%), radial-gradient(ellipse at 85% 110%, rgba(240, 185, 74, 0.05), transparent 55%);
+  background-size:
+    48px 48px,
+    48px 48px,
+    100% 100%,
+    100% 100%;
+  mask-image: radial-gradient(ellipse at 50% 35%, #000 25%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 25%, transparent 90%);
+}
+
+/* Subtle scanlines */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(255, 255, 255, 0.013) 2px, rgba(255, 255, 255, 0.013) 3px);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: var(--sf-accent);
+  color: var(--sf-bg);
+}
+
+/* Make Mantine card backdrops sit on theme */
+.mantine-Card-root {
+  background-color: var(--sf-surface);
+}
+
+/* Make Mantine headings adopt display font */
+.mantine-Title-root {
+  font-family: var(--sf-font-display);
+  letter-spacing: -0.005em;
+}
+
+/* ---------- Buttons ---------- */
+.mantine-Button-root {
+  font-family: var(--sf-font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-radius: 2px;
+  transition: background-color 200ms ease, box-shadow 220ms ease, border-color 200ms ease, color 200ms ease, transform 120ms ease;
+}
+
+/* Filled / primary CTA — solid mint, dark text, high contrast */
+.mantine-Button-root[data-variant='filled'] {
+  background: linear-gradient(180deg, var(--sf-accent) 0%, var(--sf-accent-deep) 100%);
+  color: var(--sf-bg);
+  border: 1px solid var(--sf-accent);
+  font-weight: 600;
+  text-shadow: none;
+  box-shadow: 0 4px 14px -4px rgba(94, 227, 196, 0.45);
+}
+.mantine-Button-root[data-variant='filled']:hover {
+  background: linear-gradient(180deg, #80edd1 0%, var(--sf-accent) 100%);
+  color: var(--sf-bg);
+  box-shadow: 0 0 22px var(--sf-glow), 0 4px 14px -4px rgba(94, 227, 196, 0.6);
+}
+.mantine-Button-root[data-variant='filled']:active {
+  transform: translateY(1px);
+}
+
+/* Default / secondary */
+.mantine-Button-root[data-variant='default'] {
+  background: transparent;
+  color: var(--sf-text-dim);
+  border: 1px solid var(--sf-border-dim);
+}
+.mantine-Button-root[data-variant='default']:hover {
+  background: rgba(94, 227, 196, 0.04);
+  color: var(--sf-text);
+  border-color: var(--sf-border-strong);
+  box-shadow: 0 0 14px var(--sf-glow-soft);
+}
+
+/* Subtle (inline) */
+.mantine-Button-root[data-variant='subtle'] {
+  color: var(--sf-text-dim);
+  background: transparent;
+}
+.mantine-Button-root[data-variant='subtle']:hover {
+  background: rgba(94, 227, 196, 0.06);
+  color: var(--sf-accent);
+  box-shadow: 0 0 12px var(--sf-glow-soft);
+}
+
+/* Outline */
+.mantine-Button-root[data-variant='outline'] {
+  background: transparent;
+  border: 1px solid var(--sf-border-strong);
+  color: var(--sf-accent);
+}
+.mantine-Button-root[data-variant='outline']:hover {
+  background: rgba(94, 227, 196, 0.08);
+  box-shadow: 0 0 16px var(--sf-glow);
+}
+
+/* Focus ring */
+.mantine-Button-root:focus-visible {
+  outline: 1px solid var(--sf-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- ActionIcon ---------- */
+.mantine-ActionIcon-root {
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 220ms ease, border-color 200ms ease;
+  border-radius: 2px;
+}
+.mantine-ActionIcon-root[data-variant='default'] {
+  background: transparent;
+  border: 1px solid var(--sf-border-dim);
+  color: var(--sf-text-dim);
+}
+.mantine-ActionIcon-root[data-variant='default']:hover {
+  background: rgba(94, 227, 196, 0.06);
+  color: var(--sf-accent);
+  border-color: var(--sf-border-strong);
+  box-shadow: 0 0 14px var(--sf-glow-soft);
+}
+.mantine-ActionIcon-root[data-variant='subtle']:hover {
+  color: var(--sf-accent);
+  background: rgba(94, 227, 196, 0.06);
+}
+
+/* ---------- Menu dropdown ---------- */
+.mantine-Menu-dropdown {
+  background: var(--sf-surface-2);
+  border: 1px solid var(--sf-border);
+  border-radius: 2px;
+  padding: 4px;
+  box-shadow:
+    0 14px 40px -10px rgba(0, 0, 0, 0.8),
+    0 0 24px -6px var(--sf-glow-soft),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  /* No position: relative — Mantine sets position: absolute for floating placement,
+     and the pseudo-element corners below position against that absolute box already. */
+}
+
+/* Corner brackets on dropdown */
+.mantine-Menu-dropdown::before,
+.mantine-Menu-dropdown::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--sf-accent);
+  pointer-events: none;
+  opacity: 0.85;
+}
+.mantine-Menu-dropdown::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+.mantine-Menu-dropdown::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+.mantine-Menu-item {
+  font-family: var(--sf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--sf-text-dim);
+  border-radius: 1px;
+  padding: 9px 12px;
+  transition: background-color 160ms ease, color 160ms ease, padding-left 160ms ease;
+  position: relative;
+}
+.mantine-Menu-item[data-hovered],
+.mantine-Menu-item:hover {
+  background: rgba(94, 227, 196, 0.08);
+  color: var(--sf-accent);
+  padding-left: 18px;
+}
+.mantine-Menu-item[data-hovered]::before,
+.mantine-Menu-item:hover::before {
+  content: '>';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sf-accent);
+}
+
+.mantine-Menu-divider {
+  border-color: var(--sf-border-dim);
+}
+
+.mantine-Menu-label {
+  font-family: var(--sf-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sf-text-mute);
+}
+
+/* ---------- Anchor hover glow (markdown links etc) ---------- */
+.mantine-Anchor-root {
+  color: var(--sf-accent);
+  transition: color 180ms ease, text-shadow 220ms ease;
+}
+.mantine-Anchor-root:hover {
+  color: #aef0dd;
+  text-shadow: 0 0 12px var(--sf-glow);
+}
+
+/* ---------- Badge tweak (used in BlogList tags) ---------- */
+.mantine-Badge-root[data-variant='outline'] {
+  border-radius: 2px;
+}
+
+/* ---------- Form inputs (TextInput, Textarea, NumberInput, etc.) ---------- */
+.mantine-InputWrapper-label {
+  font-family: var(--sf-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sf-text-dim);
+  margin-bottom: 6px;
+}
+.mantine-InputWrapper-required {
+  color: var(--sf-accent);
+}
+.mantine-InputWrapper-description {
+  font-size: 11px;
+  color: var(--sf-text-mute);
+}
+.mantine-InputWrapper-error {
+  color: var(--sf-accent-warm);
+  font-family: var(--sf-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+}
+
+.mantine-Input-input {
+  background-color: var(--sf-surface);
+  border: 1px solid var(--sf-border-dim);
+  border-radius: 2px;
+  color: var(--sf-text);
+  font-family: var(--sf-font-body);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.mantine-Input-input::placeholder {
+  color: var(--sf-text-mute);
+}
+.mantine-Input-input:hover {
+  border-color: var(--sf-border);
+}
+.mantine-Input-input:focus,
+.mantine-Input-input:focus-within {
+  border-color: var(--sf-border-strong);
+  background-color: var(--sf-surface-2);
+  box-shadow: 0 0 0 1px var(--sf-border-strong), 0 0 14px var(--sf-glow-soft);
+}
+
+/* Number input control buttons */
+.mantine-NumberInput-control {
+  color: var(--sf-text-dim);
+}
+.mantine-NumberInput-control:hover {
+  background: rgba(94, 227, 196, 0.08);
+  color: var(--sf-accent);
+}
+
+/* ---------- Accordion ---------- */
+.mantine-Accordion-item {
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border-dim);
+  border-radius: 2px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.mantine-Accordion-item[data-active] {
+  border-color: var(--sf-border);
+}
+.mantine-Accordion-control {
+  font-family: var(--sf-font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sf-text-dim);
+  transition: color 160ms ease, background-color 160ms ease;
+}
+.mantine-Accordion-control:hover {
+  background: rgba(94, 227, 196, 0.04);
+  color: var(--sf-accent);
+}
+.mantine-Accordion-chevron {
+  color: var(--sf-accent);
+}
+.mantine-Accordion-panel {
+  background: var(--sf-surface-2);
+  border-top: 1px dashed var(--sf-border-dim);
+}
+
+/* ---------- Code ---------- */
+.mantine-Code-root {
+  background: rgba(94, 227, 196, 0.07);
+  border: 1px solid var(--sf-border-dim);
+  border-radius: 2px;
+  color: var(--sf-accent);
+  font-family: var(--sf-font-mono);
+  font-size: 11.5px;
+  padding: 2px 6px;
+}
+
+/* ---------- Table ---------- */
+.mantine-Table-th {
+  font-family: var(--sf-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sf-text-mute);
+  font-weight: 500;
+}
+.mantine-Table-tr[data-hover]:hover,
+.mantine-Table-tr:hover {
+  background-color: rgba(94, 227, 196, 0.04) !important;
+}
+
+/* ---------- Modal ---------- */
+.mantine-Modal-content {
+  background: var(--sf-surface-2);
+  border: 1px solid var(--sf-border);
+  border-radius: 2px;
+  box-shadow: 0 18px 60px -10px rgba(0, 0, 0, 0.9), 0 0 30px -8px var(--sf-glow-soft);
+}
+.mantine-Modal-header {
+  background: transparent;
+  border-bottom: 1px dashed var(--sf-border);
+  padding: 14px 20px;
+}
+.mantine-Modal-title {
+  font-family: var(--sf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sf-accent);
+}
+.mantine-Modal-body {
+  color: var(--sf-text-dim);
+  padding: 20px;
+}
+.mantine-Modal-close:hover {
+  background: rgba(94, 227, 196, 0.08);
+  color: var(--sf-accent);
+}
+.mantine-Modal-overlay {
+  background: rgba(7, 10, 12, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+/* ---------- Divider ---------- */
+.mantine-Divider-root {
+  border-color: var(--sf-border-dim);
+}
+
+/* ---------- Dropzone ---------- */
+.mantine-Dropzone-root {
+  background: transparent;
+  border: 1px dashed var(--sf-border);
+  border-radius: 2px;
+  color: var(--sf-text-dim);
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+.mantine-Dropzone-root:hover {
+  background: rgba(94, 227, 196, 0.04);
+  border-color: var(--sf-border-strong);
+}
+.mantine-Dropzone-root[data-accept] {
+  background: rgba(94, 227, 196, 0.08);
+  border-color: var(--sf-accent);
+}
+.mantine-Dropzone-root[data-reject] {
+  background: rgba(240, 185, 74, 0.08);
+  border-color: var(--sf-accent-warm);
+}

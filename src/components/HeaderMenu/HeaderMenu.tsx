@@ -45,9 +45,9 @@ export function HeaderMenu() {
               }}
             >
               <Center>
-                {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
+                {link.icon && <link.icon size={14} stroke={1.6} style={{ marginRight: 6, color: 'var(--sf-accent)' }} />}
                 <span className={classes.linkLabel}>{link.label}</span>
-                <IconChevronDown size={14} stroke={1.5} />
+                <IconChevronDown size={12} stroke={1.6} />
               </Center>
             </a>
           </Menu.Target>
@@ -67,7 +67,7 @@ export function HeaderMenu() {
         }}
         style={{ display: 'flex', alignItems: 'center' }}
       >
-        {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
+        {link.icon && <link.icon size={14} stroke={1.6} style={{ marginRight: 6, color: 'var(--sf-accent)' }} />}
         {link.label}
       </a>
     );
@@ -77,8 +77,12 @@ export function HeaderMenu() {
     <header className={classes.header}>
       <Container size="md">
         <div className={classes.inner}>
+          <div className={classes.brand} onClick={() => navigate('/home')} role="link" tabIndex={0}>
+            <span className={classes.brandMark}>M</span>
+            <span className={classes.brandName}>MICHAEL PHELPS</span>
+          </div>
           {/* Header icons visible when page is larger than sm*/}
-          <Group gap={5} visibleFrom="sm">
+          <Group gap={2} visibleFrom="sm" className={classes.navGroup}>
             {items}
           </Group>
           {/* Header icons hidden, show burger menu when page is smaller than sm*/}

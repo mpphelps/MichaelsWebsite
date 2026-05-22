@@ -1,32 +1,144 @@
 .header {
-  height: 56px;
-  margin-bottom: 12px;
-  background-color: var(--mantine-color-body);
-  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 60px;
+  margin-bottom: 24px;
+  background: rgba(7, 10, 12, 0.72);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom: 1px solid var(--sf-border);
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--sf-accent) 35%, var(--sf-accent) 65%, transparent 100%);
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .inner {
-  height: 56px;
+  height: 60px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+}
+
+/* Wordmark */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--sf-border-strong);
+  color: var(--sf-accent);
+  font-family: var(--sf-font-display);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0;
+  background: rgba(94, 227, 196, 0.06);
+  box-shadow: 0 0 12px var(--sf-glow-soft);
+  position: relative;
+}
+.brandMark::before,
+.brandMark::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--sf-accent);
+}
+.brandMark::before {
+  top: -3px;
+  left: -3px;
+  border-right: none;
+  border-bottom: none;
+}
+.brandMark::after {
+  bottom: -3px;
+  right: -3px;
+  border-left: none;
+  border-top: none;
+}
+
+.brandName {
+  font-family: var(--sf-font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  color: var(--sf-text);
+  line-height: 1;
+}
+
+/* Nav links */
+.navGroup {
+  position: relative;
 }
 
 .link {
-  display: block;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
   line-height: 1;
-  padding: 8px 12px;
-  border-radius: var(--mantine-radius-sm);
+  padding: 9px 12px;
   text-decoration: none;
-  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
-  font-size: var(--mantine-font-size-sm);
+  color: var(--sf-text-dim);
+  font-family: var(--sf-font-mono);
+  font-size: 11.5px;
   font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+  cursor: pointer;
+}
 
-  @mixin hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-  }
+.link::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 1px;
+  background: var(--sf-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 200ms ease;
+  box-shadow: 0 0 8px var(--sf-glow);
+}
+
+.link:hover,
+.link:focus-visible {
+  color: var(--sf-text);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .linkLabel {
-  margin-right: 5px;
+  margin-right: 6px;
+}
+
+/* Drawer nav (mobile) reuses link, but darker treatment */
+@media (max-width: 768px) {
+  .link {
+    color: var(--sf-text);
+    padding: 12px 4px;
+  }
 }

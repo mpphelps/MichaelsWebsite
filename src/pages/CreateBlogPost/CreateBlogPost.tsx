@@ -17,7 +17,7 @@ const markdownReference: { syntax: string; description: string; block?: boolean 
   { syntax: '![alt](image-url)', description: 'Image (auto-added on upload)' },
   {
     syntax: '```typescript\nyour code here\n```',
-    description: 'Code block — js, jsx, ts, tsx, css, scss, html, bash, json, csharp, c++',
+    description: 'Code block. Supports js, jsx, ts, tsx, css, scss, html, bash, json, csharp, c++',
     block: true,
   },
 ];
