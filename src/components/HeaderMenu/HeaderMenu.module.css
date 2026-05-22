@@ -135,10 +135,67 @@
   margin-right: 6px;
 }
 
-/* Drawer nav (mobile) reuses link, but darker treatment */
-@media (max-width: 768px) {
-  .link {
-    color: var(--sf-text);
-    padding: 12px 4px;
-  }
+/* ---------- Drawer (mobile) ---------- */
+.drawerLink,
+.drawerGroupLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  font-family: var(--sf-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sf-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--sf-border-dim);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, padding-left 160ms ease;
+}
+
+.drawerLink:hover,
+.drawerLink:active {
+  background: rgba(94, 227, 196, 0.06);
+  color: var(--sf-accent);
+  padding-left: 26px;
+}
+
+.drawerGroup {
+  border-bottom: 1px solid var(--sf-border-dim);
+}
+.drawerGroupLabel {
+  color: var(--sf-text-dim);
+  border-bottom: none;
+  cursor: default;
+}
+
+.drawerSubList {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 12px 28px;
+  border-left: 1px dashed var(--sf-border-dim);
+  margin-left: 32px;
+}
+.drawerSubLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: var(--sf-text-dim);
+  text-decoration: none;
+  font-family: var(--sf-font-body);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  transition: color 160ms ease, padding-left 160ms ease;
+}
+.drawerSubLink:hover,
+.drawerSubLink:active {
+  color: var(--sf-accent);
+  padding-left: 22px;
+}
+.drawerSubArrow {
+  color: var(--sf-accent);
+  font-family: var(--sf-font-mono);
+  opacity: 0.7;
 }

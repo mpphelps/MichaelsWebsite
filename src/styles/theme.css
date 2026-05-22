@@ -418,6 +418,52 @@ body::after {
   border-color: var(--sf-border-dim);
 }
 
+/* ---------- Drawer (mobile nav) ---------- */
+.mantine-Drawer-content {
+  background: var(--sf-surface);
+  border-left: 1px solid var(--sf-border);
+  box-shadow: -20px 0 60px -20px rgba(0, 0, 0, 0.8), 0 0 30px -10px var(--sf-glow-soft);
+}
+.mantine-Drawer-header {
+  background: transparent;
+  border-bottom: 1px dashed var(--sf-border);
+  padding: 14px 18px;
+}
+.mantine-Drawer-title {
+  font-family: var(--sf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sf-accent);
+}
+.mantine-Drawer-body {
+  padding: 18px;
+}
+.mantine-Drawer-close {
+  color: var(--sf-text-dim);
+  border-radius: 2px;
+}
+.mantine-Drawer-close:hover {
+  background: rgba(94, 227, 196, 0.08);
+  color: var(--sf-accent);
+}
+.mantine-Drawer-overlay {
+  background: rgba(7, 10, 12, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+/* ---------- Burger (mobile nav trigger) ---------- */
+.mantine-Burger-burger,
+.mantine-Burger-burger::before,
+.mantine-Burger-burger::after {
+  background-color: var(--sf-text-dim) !important;
+}
+.mantine-Burger-root:hover .mantine-Burger-burger,
+.mantine-Burger-root:hover .mantine-Burger-burger::before,
+.mantine-Burger-root:hover .mantine-Burger-burger::after {
+  background-color: var(--sf-accent) !important;
+}
+
 /* ---------- Dropzone ---------- */
 .mantine-Dropzone-root {
   background: transparent;

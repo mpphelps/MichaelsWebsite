@@ -1,5 +1,5 @@
-import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconLogin, IconPoint } from '@tabler/icons-react';
-import { Burger, Center, Container, Drawer, Flex, Group, Menu, Stack } from '@mantine/core';
+import { IconChevronDown, IconHome, IconArticle, IconBulb, IconFileCv, IconAddressBook, IconLogin } from '@tabler/icons-react';
+import { Burger, Center, Container, Drawer, Group, Menu, Stack } from '@mantine/core';
 import classes from './HeaderMenu.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
@@ -90,35 +90,34 @@ export function HeaderMenu() {
         </div>
       </Container>
 
-      <Drawer opened={opened} onClose={toggle} size="100%" padding="md" title="Navigation" hiddenFrom="sm" zIndex={1000}>
-        <Stack>
+      <Drawer opened={opened} onClose={toggle} size="100%" padding={0} title="// NAVIGATION" hiddenFrom="sm" zIndex={1000}>
+        <Stack gap={0}>
           {links.map((link) => {
             if (link.links) {
               return (
-                <Stack key={link.label} gap="xs">
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {link.icon && <link.icon size={20} style={{ marginRight: 5, marginLeft: 10 }} />}
-                    {link.label}
+                <div key={link.label} className={classes.drawerGroup}>
+                  <div className={classes.drawerGroupLabel}>
+                    {link.icon && <link.icon size={14} stroke={1.6} style={{ color: 'var(--sf-accent)' }} />}
+                    <span>{link.label}</span>
                   </div>
-                  <Stack ml={30} gap="xs">
+                  <div className={classes.drawerSubList}>
                     {link.links.map((subLink) => (
-                      <Flex align="center" key={subLink.link}>
-                        <IconPoint />
-                        <a
-                          href={subLink.link}
-                          className={classes.link}
-                          onClick={(event) => {
-                            event.preventDefault();
-                            toggle();
-                            window.open(subLink.link);
-                          }}
-                        >
-                          {subLink.label}
-                        </a>
-                      </Flex>
+                      <a
+                        key={subLink.link}
+                        href={subLink.link}
+                        className={classes.drawerSubLink}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          toggle();
+                          window.open(subLink.link);
+                        }}
+                      >
+                        <span className={classes.drawerSubArrow}>›</span>
+                        {subLink.label}
+                      </a>
                     ))}
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
               );
             }
 
@@ -126,16 +125,15 @@ export function HeaderMenu() {
               <a
                 key={link.label}
                 href={link.link}
-                className={classes.link}
+                className={classes.drawerLink}
                 onClick={(event) => {
                   event.preventDefault();
                   toggle();
                   navigate(link.link);
                 }}
-                style={{ display: 'flex', alignItems: 'center' }}
               >
-                {link.icon && <link.icon size={20} style={{ marginRight: 5 }} />}
-                {link.label}
+                {link.icon && <link.icon size={16} stroke={1.6} style={{ color: 'var(--sf-accent)' }} />}
+                <span>{link.label}</span>
               </a>
             );
           })}
