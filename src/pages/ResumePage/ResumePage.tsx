@@ -42,7 +42,7 @@ export default function ResumePage() {
             <Text component="span" fw={600}>
               Languages:
             </Text>{' '}
-            TypeScript, JavaScript, C#, Python, Java, C++, C, HTML, CSS
+            TypeScript, JavaScript, C#, Python, Java, C++, C, HTML, CSS, MQTT
           </Text>
         </List.Item>
         <List.Item>
@@ -50,8 +50,8 @@ export default function ResumePage() {
             <Text component="span" fw={600}>
               Technologies:
             </Text>{' '}
-            React, .NET Core, ASP.NET, Entity Framework, Azure, Kubernetes, RESTful APIs, GraphQL, gRPC, SignalR, Web Sockets, OpenAI API, LangChain, Hugging Face, JWT/OAuth, NUnit, xUnit, Cucumber,
-            Jest, Vitest, Swagger, Postman, Vite, Tailwind CSS
+            React, Remix, Node.js, Turbo Monorepo, Temporal, .NET Core, ASP.NET, Entity Framework, Azure, Kubernetes, RESTful APIs, GraphQL, gRPC, SignalR, Web Sockets, OpenAI API, LangChain, Hugging
+            Face, JWT/OAuth, NUnit, xUnit, Cucumber, Jest, Vitest, Swagger, Postman, Vite, Tailwind CSS
           </Text>
         </List.Item>
         <List.Item>
@@ -86,10 +86,21 @@ export default function ResumePage() {
       </Text>
       <Divider mb="md" />
 
+      {/* Anduril - Software Engineer */}
+      <Group justify="space-between" mb="xs">
+        <Text fw={700}>Anduril - Software Engineer</Text>
+        <Text>Costa Mesa, CA March 2026 - Present</Text>
+      </Group>
+      <List mb="lg">
+        <List.Item>
+          Developing in-house MES system, Forge, for Anduril's Arsenal OS. Built the parts repository page and smart tools data workflow utilizing TypeScript, Turbo monorepo, Node.js, Remix, and MQTT.
+        </List.Item>
+      </List>
+
       {/* Honeywell - Senior Software Engineer */}
       <Group justify="space-between" mb="xs">
         <Text fw={700}>Honeywell - Senior Software Engineer</Text>
-        <Text>Atlanta, GA May 2022 - Present</Text>
+        <Text>Atlanta, GA May 2022 - February 2026</Text>
       </Group>
       <List mb="lg">
         <List.Item>
