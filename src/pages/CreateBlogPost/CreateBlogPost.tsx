@@ -1,10 +1,26 @@
 import { useEffect, useState } from 'react';
-import { Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Card, Text, Modal } from '@mantine/core';
+import { Accordion, Container, TextInput, Textarea, Button, Group, Title, Stack, Divider, NumberInput, Card, Text, Modal, Table, Code } from '@mantine/core';
+import { IconMarkdown } from '@tabler/icons-react';
 import { supabase } from '../../lib/supabase';
 import { useBlocker, useNavigate } from 'react-router-dom';
 import { ImageUpload } from '../../components/ImageUpload/ImageUpload';
 import { BlogPostContentContainer } from '../../components/BlogPostContent/BlogPostContent';
 import { useDisclosure } from '@mantine/hooks';
+
+const markdownReference: { syntax: string; description: string; block?: boolean }[] = [
+  { syntax: '# Heading', description: 'Heading 1' },
+  { syntax: '## Heading', description: 'Heading 2' },
+  { syntax: '### Heading', description: 'Heading 3' },
+  { syntax: '- item', description: 'Bulleted list item' },
+  { syntax: '[text](https://url)', description: 'External link (opens in new tab)' },
+  { syntax: '[text](/path)', description: 'Internal link (uses router)' },
+  { syntax: '![alt](image-url)', description: 'Image (auto-added on upload)' },
+  {
+    syntax: '```typescript\nyour code here\n```',
+    description: 'Code block — js, jsx, ts, tsx, css, scss, html, bash, json, csharp, c++',
+    block: true,
+  },
+];
 
 interface BlogPostData {
   id?: string;
@@ -248,6 +264,37 @@ export const CreateBlogPost = ({ initialData }: { initialData?: BlogPostData | n
         <TextInput label="Excerpt" placeholder="Enter a short excerpt" value={excerpt} onChange={(event) => onExcerptChange(event)} required />
         <NumberInput label="Read Time (min)" placeholder="Enter the read time (e.g., 5 min)" value={readTime} onChange={(value) => onSetReadTime(value)} required />
         <TextInput label="Tags" placeholder="Enter tags separated by commas" value={tags.join(', ')} onChange={(event) => onSetTags(event)} required />
+        <Accordion variant="separated" radius="md">
+          <Accordion.Item value="markdown-reference">
+            <Accordion.Control icon={<IconMarkdown size={20} />}>
+              <Text fw={500}>Markdown Reference</Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Table verticalSpacing="xs" horizontalSpacing="md" highlightOnHover withRowBorders={false}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th style={{ width: '40%' }}>Syntax</Table.Th>
+                    <Table.Th>Result</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {markdownReference.map(({ syntax, description, block }) => (
+                    <Table.Tr key={syntax}>
+                      <Table.Td>
+                        {block ? <Code block>{syntax}</Code> : <Code>{syntax}</Code>}
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="sm" c="dimmed">
+                          {description}
+                        </Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Accordion.Panel>
+          </Accordion.Item>
+        </Accordion>
         <Textarea
           label="Content"
           placeholder="Write your blog post content here..."
