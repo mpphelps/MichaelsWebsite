@@ -199,3 +199,26 @@
   font-family: var(--sf-font-mono);
   opacity: 0.7;
 }
+
+.drawerSubGroup {
+  display: flex;
+  flex-direction: column;
+}
+.drawerSubGroupLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 6px;
+  color: var(--sf-text-dim);
+  font-family: var(--sf-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.drawerSubSubList {
+  display: flex;
+  flex-direction: column;
+  padding-left: 18px;
+  margin-left: 10px;
+  border-left: 1px dashed var(--sf-border-dim);
+}

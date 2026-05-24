@@ -4,7 +4,17 @@ import classes from './HeaderMenu.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 
-const links = [
+type ProjectLeaf = { link: string; label: string };
+type ProjectGroup = { label: string; links: ProjectLeaf[] };
+type ProjectEntry = ProjectLeaf | ProjectGroup;
+
+const links: Array<{
+  link?: string;
+  label: string;
+  icon?: typeof IconHome;
+  hover?: string;
+  links?: ProjectEntry[];
+}> = [
   { link: '/home', label: 'Home', icon: IconHome },
   {
     label: 'Projects',
@@ -14,6 +24,14 @@ const links = [
       { link: 'https://mpphelps.github.io/Etch-a-Sketch/', label: 'Etch A Sketch' },
       { link: 'https://github.com/mpphelps/ArduinoSnakeGame', label: 'Arduino Snake Game' },
       { link: `${window.location.origin}/matrix`, label: 'Matrix Rain' },
+      { link: 'https://github.com/mpphelps/MichaelsWebsite', label: "Michael's Website" },
+      {
+        label: 'Bookshelf',
+        links: [
+          { link: 'https://readingbookshelf.com/', label: 'Live Site' },
+          { link: 'https://github.com/mpphelps/Bookshelf', label: 'Source' },
+        ],
+      },
     ],
   },
   { link: '/blog', label: 'Blog', icon: IconArticle },
@@ -27,11 +45,29 @@ export function HeaderMenu() {
   const [opened, { toggle }] = useDisclosure(false);
 
   const items = links.map((link) => {
-    const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link} onClick={() => window.open(item.link)}>
-        {item.label}
-      </Menu.Item>
-    ));
+    const menuItems = link.links?.map((item) => {
+      if ('links' in item) {
+        return (
+          <Menu.Sub key={item.label}>
+            <Menu.Sub.Target>
+              <Menu.Sub.Item>{item.label}</Menu.Sub.Item>
+            </Menu.Sub.Target>
+            <Menu.Sub.Dropdown>
+              {item.links.map((subItem) => (
+                <Menu.Item key={subItem.link} onClick={() => window.open(subItem.link)}>
+                  {subItem.label}
+                </Menu.Item>
+              ))}
+            </Menu.Sub.Dropdown>
+          </Menu.Sub>
+        );
+      }
+      return (
+        <Menu.Item key={item.link} onClick={() => window.open(item.link)}>
+          {item.label}
+        </Menu.Item>
+      );
+    });
 
     if (menuItems) {
       return (
@@ -101,21 +137,50 @@ export function HeaderMenu() {
                     <span>{link.label}</span>
                   </div>
                   <div className={classes.drawerSubList}>
-                    {link.links.map((subLink) => (
-                      <a
-                        key={subLink.link}
-                        href={subLink.link}
-                        className={classes.drawerSubLink}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          toggle();
-                          window.open(subLink.link);
-                        }}
-                      >
-                        <span className={classes.drawerSubArrow}>›</span>
-                        {subLink.label}
-                      </a>
-                    ))}
+                    {link.links.map((subLink) => {
+                      if ('links' in subLink) {
+                        return (
+                          <div key={subLink.label} className={classes.drawerSubGroup}>
+                            <div className={classes.drawerSubGroupLabel}>
+                              <span className={classes.drawerSubArrow}>›</span>
+                              {subLink.label}
+                            </div>
+                            <div className={classes.drawerSubSubList}>
+                              {subLink.links.map((leaf) => (
+                                <a
+                                  key={leaf.link}
+                                  href={leaf.link}
+                                  className={classes.drawerSubLink}
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    toggle();
+                                    window.open(leaf.link);
+                                  }}
+                                >
+                                  <span className={classes.drawerSubArrow}>›</span>
+                                  {leaf.label}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return (
+                        <a
+                          key={subLink.link}
+                          href={subLink.link}
+                          className={classes.drawerSubLink}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            toggle();
+                            window.open(subLink.link);
+                          }}
+                        >
+                          <span className={classes.drawerSubArrow}>›</span>
+                          {subLink.label}
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -129,7 +194,7 @@ export function HeaderMenu() {
                 onClick={(event) => {
                   event.preventDefault();
                   toggle();
-                  navigate(link.link);
+                  if (link.link) navigate(link.link);
                 }}
               >
                 {link.icon && <link.icon size={16} stroke={1.6} style={{ color: 'var(--sf-accent)' }} />}
